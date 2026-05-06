@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inclusive Attestation Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #f9f7f4;
+      color: #1a1a1a;
+      line-height: 1.7;
+    }
+
+    header.site-header {
+      border-bottom: 3px solid #1a1a1a;
+      padding: 1rem 2rem;
+      background: #fff;
+    }
+
+    header.site-header .masthead {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-family: 'Arial Black', sans-serif;
+    }
+
+    header.site-header .tagline {
+      font-size: 0.75rem;
+      color: #666;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 0.15rem;
+    }
+
+    .article-wrapper {
+      max-width: 720px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .label {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-family: 'Arial', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: #1a1a1a;
+      color: #fff;
+      padding: 0.2rem 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    article h1 {
+      font-size: 2.4rem;
+      line-height: 1.2;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .deck {
+      font-size: 1.15rem;
+      color: #444;
+      font-style: italic;
+      border-left: 3px solid #ccc;
+      padding-left: 1rem;
+      margin: 1rem 0 1.5rem;
+    }
+
+    .byline {
+      font-size: 0.8rem;
+      font-family: Arial, sans-serif;
+      color: #555;
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+      padding: 0.5rem 0;
+      margin-bottom: 1.5rem;
+    }
+
+    .byline strong { color: #1a1a1a; }
+
+    article p {
+      margin-bottom: 1.25rem;
+      font-size: 1.05rem;
+    }
+
+    blockquote {
+      border-left: 4px solid #1a1a1a;
+      margin: 1.5rem 0;
+      padding: 0.75rem 1.25rem;
+      font-size: 1.2rem;
+      font-style: italic;
+      color: #333;
+      background: #f0ede8;
+    }
+
+    blockquote cite {
+      display: block;
+      font-size: 0.8rem;
+      font-style: normal;
+      margin-top: 0.5rem;
+      color: #666;
+    }
+
+    /* Exclusion highlight */
+    [data-indelible-exclude] {
+      outline: 2px dashed #dc2626;
+      outline-offset: 2px;
+      position: relative;
+      opacity: 0.7;
+    }
+
+    [data-indelible-exclude]::after {
+      content: "excluded";
+      position: absolute;
+      top: -0.1rem;
+      right: 0;
+      font-size: 0.55rem;
+      font-family: Arial, sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: #dc2626;
+      color: #fff;
+      padding: 0.1rem 0.3rem;
+    }
+
+    .ad-banner {
+      background: #e8e8e8;
+      border: 1px dashed #aaa;
+      text-align: center;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      font-family: Arial, sans-serif;
+      font-size: 0.8rem;
+      color: #888;
+    }
+
+    .indelible-legend {
+      font-family: Arial, sans-serif;
+      font-size: 0.78rem;
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 2rem;
+      color: #991b1b;
+    }
+
+    .indelible-legend strong { display: block; margin-bottom: 0.25rem; }
+
+    footer.site-footer {
+      text-align: center;
+      font-size: 0.75rem;
+      font-family: Arial, sans-serif;
+      color: #999;
+      border-top: 1px solid #ddd;
+      padding: 1.5rem;
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="masthead">The Daily Ledger</div>
+  <div class="tagline">All the news that's fit to attest &mdash; April 26, 2026</div>
+</header>
+
+<div class="article-wrapper">
+
+  <div class="indelible-legend">
+    <strong>Indelible HTMLData &mdash; Inclusive Mode</strong>
+    Everything inside the <code>&lt;article data-indelible&gt;</code> element is attested by default. Elements marked <code>data-indelible-exclude</code> (highlighted in red) are carved out of the attestation, such as the ad banner and the photo caption.
+  </div>
+
+  <span class="label">Technology</span>
+
+  <article data-indelible='{"ipfsCid":"bafkreiaoholzqr5m73pz3brgjae3v7h54bpfjvattdmmo5grhmmjdomy7q","chainId":11155111,"authority":"0xd77d245c4fd75adb4eadfc4147469257061f06c1","attestationIndex":12}'>
+
+    <h1>Lorem Ipsum Raises $40 to Attest the Open Web</h1>
+
+    <p class="deck">A startup promising cryptographic proof of authorship says it will change how readers trust what they read online.</p>
+
+    <div class="byline">
+      By <strong>Jane Placeholder</strong> &nbsp;|&nbsp; Staff Reporter &nbsp;|&nbsp; April 26, 2026
+    </div>
+
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante.
+    </p>
+
+    <div class="ad-banner" data-indelible-exclude>
+      &mdash; Advertisement &mdash;<br />Buy Lorem Ipsum Gold &trade; &mdash; Excluded from attestation
+    </div>
+
+    <p>
+      Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi.
+    </p>
+
+    <blockquote data-indelible-quote='{
+  "ipfsCid": "bafkreiecouqx2tkbyr7ixo2z5fa2zovq2uw523mo2h4jt6z5t7bq5jn544",
+  "chainId": 11155111,
+  "authority": "0xD2f2c95962632B4742703CC058889c624380C748",
+  "attestationIndex": 5,
+  "proof": [
+    {
+      "value": [
+        "25",
+        "led before the war. On Sunday, the average pri"
+      ],
+      "proof": [
+        "0x3e91ed639d1bb8d0343178634649a7b91de459170e28d3f95edd40390adb983e",
+        "0xf469d47c0e4717731a582b9cf7f33d83923d50ecc3a4c457a680745449fafa07",
+        "0x94c7a218928810f644f5aa922ee9b3683e2bc2cd7e3f1386907fe75ae1fa4121",
+        "0x32ad192c258977b73f94d53155d1a0d81523cb7b790526b9fbac7662517792c0",
+        "0x2b0f1dde4696d8066311c0e94e07078d28a4429cea427ef9f34632729d679286"
+      ]
+    },
+    {
+      "value": [
+        "26",
+        "ce of a gallon of gasoline in the United State"
+      ],
+      "proof": [
+        "0x9f9222d78b7c5096c92ba9fcdc89f0753e7db86686c4cba9574c41a03e4f54a4",
+        "0x7a41420f62c42b2fb7f84e734f0bbaed2175e0b2262d1729723daf5164689c1c",
+        "0x14775f0d8d12d6756402873a16fbcd58d4494fd0b790d7747563a145e3999f3d",
+        "0x116712b054292ade9f66da13978dbee5fff839e5a6f683179f013fd83e768787",
+        "0x8c21100c6009f88d59547902273ed8e252f6ec7a309266e092517ed86eb927f4"
+      ]
+    },
+    {
+      "value": [
+        "27",
+        "s was $4.13, according to AAA, the motor club,"
+      ],
+      "proof": [
+        "0x2def061af7cc1f9e0a98454276bb117f40c815d94909cc90b79dc00adcfe7a00",
+        "0x15fc4f9ff0ceb9c87f486327459726ecbad125d409d6e90b4905f4e1aa5247fa",
+        "0xa03c8d817a6a717c664b6ea308233453589519c50de6dfef0d07e5ca4483e819",
+        "0x32ad192c258977b73f94d53155d1a0d81523cb7b790526b9fbac7662517792c0",
+        "0x2b0f1dde4696d8066311c0e94e07078d28a4429cea427ef9f34632729d679286"
+      ]
+    }
+  ]}'>
+      On Sunday, the average price of a gallon of gasoline in the United States was $440.13, according to AAA, the motor club
+    </blockquote>
+
+    <p>
+      Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.
+    </p>
+
+    <p style="font-size:0.8rem; color:#888; font-family:Arial,sans-serif; font-style:italic;" data-indelible-exclude>
+      Photo: A generic stock image of a computer. Credit: Unsplash &mdash; Excluded from attestation
+    </p>
+
+  </article>
+
+</div>
+
+<footer class="site-footer">
+  &copy; 2026 The Daily Ledger &mdash; Powered by the Indelible HTMLData Standard
+</footer>
+
+<script>
+  const result = Indelible.extractAttestation();
+  console.log("[Indelible] mode:", result.mode);
+  console.log("[Indelible] attestation:", result.attestation);
+  console.log("[Indelible] text:", result.text);
+</script>
+
+</body>
+</html>

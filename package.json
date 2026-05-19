@@ -1,0 +1,25 @@
+{
+  "name": "demo-site",
+  "version": "1.0.0",
+  "description": "Indelible Demo",
+  "homepage": "https://github.com/indelible-world/demo-site#readme",
+  "bugs": {
+    "url": "https://github.com/indelible-world/demo-site/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/indelible-world/demo-site.git"
+  },
+  "license": "ISC",
+  "author": "Will Patti",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "indelible": "^0.2.7",
+    "jsdom": "^29.1.1"
+  }
+}

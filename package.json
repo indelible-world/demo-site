@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "dotenv": "^17.4.2",
-    "indelible": "^0.2.7",
+    "indelible": "^0.3.0",
     "jsdom": "^29.1.1"
   }
 }

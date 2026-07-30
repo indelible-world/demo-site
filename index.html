@@ -4,17 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Indelible Demo</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<header class="site-header">
+  <div class="masthead">Indelible Demo</div>
+  <div class="tagline">HTMLData Pages</div>
+</header>
+
+<div class="index-wrapper">
+
     <h1>Verified Pages</h1>
-    <a href="exclusive.html">Exclusive</a>
-    <a href="inclusive.html">Inclusive</a>
+    <div class="demo-list">
+        <a href="exclusive.html">Exclusive<span class="demo-desc">Only marked elements are attested</span></a>
+        <a href="inclusive.html">Inclusive<span class="demo-desc">Everything attested except marked exclusions</span></a>
+    </div>
+
     <h1>Pages with errors</h1>
-    <a href="wrongtext.html">Wrong Text</a>
-    <a href="wrongauthority.html">Wrong Authority</a>
-    <a href="wrongproof.html">Quote Proof does not match chain</a>
-    <a href="wrongquote.html">Wrong Quote Text</a>
-    <!--<a href="wrongenstime.html">Wrong ENS Binding Timestamp</a>-->
+    <div class="demo-list errors">
+        <a href="wrongtext.html">Wrong Text<span class="demo-desc">Content does not match the attestation</span></a>
+        <a href="wrongauthority.html">Wrong Authority<span class="demo-desc">Incorrect signer address</span></a>
+        <a href="wrongproof.html">Wrong Proof<span class="demo-desc">Quote proof does not match chain</span></a>
+        <a href="wrongquote.html">Wrong Quote Text<span class="demo-desc">Quote text was altered</span></a>
+        <!--<a href="wrongenstime.html">Wrong ENS Binding Timestamp</a>-->
+    </div>
+
+</div>
+
+<footer class="site-footer">
+  &copy; 2026 indelible.world
+</footer>
 
 </body>
 </html>

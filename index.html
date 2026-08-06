@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Newsroom Demo</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Section 0: intro slide (logo, mission statement, three feature blurbs).
+       Pins, holds, then fades out the same way the front page does into the
+       split section — see .intro-stage fade timing in js/main.js. -->
+  <section class="intro-spacer">
+    <div class="intro-stage">
+      <div id="intro-logo" class="intro-logo"></div>
+      <div class="intro-content">
+        <p id="intro-eyebrow" class="intro-eyebrow"></p>
+        <h1 id="intro-heading" class="intro-heading"></h1>
+        <p id="intro-subtext" class="intro-subtext"></p>
+      </div>
+      <div id="intro-features" class="intro-features"></div>
+    </div>
+  </section>
+
+  <!-- Section 1: full-screen front page, highlight draws itself in on scroll -->
+  <section class="hero-spacer">
+    <div class="hero-stage">
+      <div class="hero-frame">
+        <img id="front-page-img" alt="" />
+        <div id="hero-highlight-box" class="hero-highlight"></div>
+      </div>
+      <div class="hero-caption">Scroll to continue</div>
+    </div>
+  </section>
+
+  <!-- Section 2: two column split. Pins at the top of the viewport and holds
+       there (rather than scrolling off) while the highlight marks fade in. -->
+  <section class="split-spacer">
+    <div class="split-stage">
+      <div class="split">
+        <div class="split-grid">
+          <div class="article-clip">
+            <div class="article-card">
+              <img id="article-header-img" class="article-header-img" alt="" />
+              <div id="article-body" class="article-body"></div>
+            </div>
+          </div>
+
+          <div class="quotes">
+            <article id="quote-accurate" class="quote-card verified">
+              <span class="quote-badge"></span>
+              <blockquote></blockquote>
+              <cite></cite>
+            </article>
+
+            <article id="quote-inaccurate" class="quote-card altered">
+              <span class="quote-badge"></span>
+              <blockquote></blockquote>
+              <cite></cite>
+            </article>
+          </div>
+
+          <!-- Beat 3: larger lead-in line, slides in from the right first,
+               holds, then slides back out before .reveal-column takes over. -->
+          <div class="lead-column">
+            <div id="lead-text" class="lead-text">
+              <p></p>
+            </div>
+          </div>
+
+          <!-- Beat 3: slides in from the right to where .quotes rests, once
+               .quotes has slid left into the article column's place. -->
+          <div class="reveal-column">
+            <div id="filler-upper" class="filler-card verified">
+              <span class="quote-badge"></span>
+              <p></p>
+            </div>
+            <div id="filler-lower" class="filler-card altered">
+              <span class="quote-badge"></span>
+              <p></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="more">— rest of the storyboard continues below —</p>
+
+  <script src="clients/default.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

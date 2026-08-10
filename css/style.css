@@ -327,8 +327,7 @@ html, body {
   transform: translateY(30px);
   transition: opacity 0.7s ease, transform 0.7s ease;
   padding: 1.6rem 1.8rem;
-  border-radius: 4px;
-  background: #fff;
+  background: #fafafa;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
@@ -444,8 +443,7 @@ html, body {
   left: 0;
   right: 0;
   padding: 1.6rem 1.8rem;
-  border-radius: 4px;
-  background: #fff;
+  background: #fafafa;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 

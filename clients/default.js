@@ -72,7 +72,7 @@ window.SITE_CONFIG = {
   beat3: {
     // Larger lead-in line that slides in first, holds, then slides back out
     // before the verified/invalid blocks take its place.
-    leadText: "Each quote is checked against an immutable fingerprint of the original published text…",
+    leadText: "Each quote is checked against an immutable fingerprint of the original published text...",
     upperLabel: "VERIFIED",
     upperText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     lowerLabel: "INVALID",

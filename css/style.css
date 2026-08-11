@@ -710,3 +710,5 @@ mark.flag {
   font-size: 0.9rem;
   text-align: center;
 }
+
+a { color: inherit; } 

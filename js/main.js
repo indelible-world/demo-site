@@ -85,6 +85,26 @@
     });
   }
 
+  // Beat 4: the hash is built one <span> per hex digit, because each digit is
+  // a landing slot the article's letters are aimed at individually.
+  const hashPanel = document.getElementById("hash-panel");
+  const hashValueEl = document.getElementById("hash-value");
+  const hashNoteEl = document.getElementById("hash-note");
+  hashPanel.querySelector(".quote-badge").textContent = cfg.beat4.hashLabel;
+  hashNoteEl.textContent = cfg.beat4.note;
+
+  const hashDigitEls = [];
+  (cfg.beat4.hashPrefix + cfg.beat4.hash).split("").forEach((ch, i) => {
+    const span = document.createElement("span");
+    span.className = "hash-digit";
+    span.textContent = ch;
+    // The "0x" prefix isn't a slot — it's already part of the label, not
+    // something a letter resolves into, so show it filled from the start.
+    if (i < cfg.beat4.hashPrefix.length) span.classList.add("is-filled");
+    else hashDigitEls.push(span);
+    hashValueEl.appendChild(span);
+  });
+
   // ---------- Intro fade-out ----------
 
   const introSpacer = document.querySelector(".intro-spacer");
@@ -229,6 +249,233 @@
     // Lead-in line centers on the combined span of both quote cards, not
     // either one individually — it reads as one line, not paired with either.
     centerOn(leadTextEl, quotesEl, quotesTop);
+    centerOn(hashPanel, quotesEl, quotesTop);
+  }
+
+  // ---------- Beat 4: article letters fly into the hash ----------
+
+  const hashColumn = document.querySelector(".hash-column");
+  const HEX = "0123456789abcdef";
+  // How much of a window one individual letter's own trip occupies; the
+  // remainder is the stagger spread across all letters. The return is a fade,
+  // not a flight, so it wants a shorter per-letter duration than the outbound.
+  const LETTER_FLIGHT_VH = 26;
+  const LETTER_FADE_VH = 12;
+  const FLIGHT_START_VH = 48;
+  const FLIGHT_END_VH = 156;
+  const RETURN_START_VH = 240;
+  const RETURN_END_VH = 348;
+
+  // Deterministic per-index pseudo-random. Math.random() per frame would make
+  // each letter re-roll its arc every scroll tick and jitter in place.
+  function rand(seed) {
+    const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+    return x - Math.floor(x);
+  }
+
+  // Wraps every non-space character in its own <span class="char">. Spaces stay
+  // as plain text nodes, and .char is `display: inline` until the beat engages,
+  // so the article's line breaking is byte-for-byte unchanged while it's just
+  // being read on the left.
+  function splitIntoChars(root) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+    textNodes.forEach((node) => {
+      const frag = document.createDocumentFragment();
+      node.nodeValue.split("").forEach((ch) => {
+        if (/\s/.test(ch)) {
+          frag.appendChild(document.createTextNode(ch));
+          return;
+        }
+        const span = document.createElement("span");
+        span.className = "char";
+        span.textContent = ch;
+        frag.appendChild(span);
+      });
+      node.parentNode.replaceChild(frag, node);
+    });
+
+    return Array.from(root.querySelectorAll(".char"));
+  }
+
+  const charEls = splitIntoChars(articleBody);
+
+  // Flight personality per letter, rolled once: arc bow, spin, stagger offset,
+  // which hash slot it lands on, and the hex digit it scrambles into.
+  const charFx = charEls.map((_, i) => ({
+    arcX: (rand(i + 1) - 0.5) * 240,
+    arcY: (rand(i + 101) - 0.5) * 320,
+    spin: (rand(i + 201) - 0.5) * 720,
+    jitter: rand(i + 301),
+    slot: Math.floor(rand(i + 401) * Math.max(hashDigitEls.length, 1)),
+    digit: HEX[Math.floor(rand(i + 501) * HEX.length)],
+    original: charEls[i].textContent
+  }));
+
+  let charLayout = null;
+  let charsEngaged = false;
+
+  // Measured once and cached: pulling the letters out of flow destroys the
+  // geometry we need, so it has to be read while the article is still intact.
+  function measureCharLayout() {
+    if (charLayout) return charLayout;
+    positionFillerCards();
+
+    const bodyRect = articleBody.getBoundingClientRect();
+    const slots = hashDigitEls.map((el) => {
+      const r = el.getBoundingClientRect();
+      return {
+        x: r.left - bodyRect.left,
+        y: r.top - bodyRect.top,
+        h: r.height
+      };
+    });
+
+    const paras = Array.from(articleBody.querySelectorAll("p")).map((p) => ({
+      el: p,
+      height: p.getBoundingClientRect().height
+    }));
+
+    const chars = charEls.map((el, i) => {
+      const r = el.getBoundingClientRect();
+      const left = r.left - bodyRect.left;
+      const top = r.top - bodyRect.top;
+      const slot = slots[charFx[i].slot] || { x: left, y: top, h: r.height };
+      return {
+        el,
+        left,
+        top,
+        dx: slot.x - left,
+        dy: slot.y - top
+      };
+    });
+
+    charLayout = { chars, paras };
+    return charLayout;
+  }
+
+  // Freezes the paragraph boxes, pins each letter at the offset it already
+  // occupied, then switches them to absolute — so the article looks identical
+  // at the moment it becomes animatable.
+  function engageChars() {
+    if (charsEngaged) return;
+    const layout = measureCharLayout();
+    layout.paras.forEach((p) => {
+      p.el.style.height = p.height + "px";
+    });
+    layout.chars.forEach((c) => {
+      c.el.style.left = c.left + "px";
+      c.el.style.top = c.top + "px";
+    });
+    articleBody.classList.add("is-flying");
+    charsEngaged = true;
+  }
+
+  function releaseChars() {
+    if (!charsEngaged) return;
+    articleBody.classList.remove("is-flying");
+    charLayout.paras.forEach((p) => {
+      p.el.style.height = "";
+    });
+    charLayout.chars.forEach((c, i) => {
+      c.el.style.cssText = "";
+      c.el.textContent = charFx[i].original;
+    });
+    hashDigitEls.forEach((el) => el.classList.remove("is-filled"));
+    charsEngaged = false;
+  }
+
+  function easeInOut(t) {
+    return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  }
+
+  function updateCharFlight(scrolledPx) {
+    // Released outside the beat entirely, not just parked at t=0: the chars have
+    // to be back in normal flow for beat 2, or the <mark> wrapping "North
+    // Carolina" collapses to zero width around its out-of-flow children and its
+    // highlight never renders.
+    const engaged =
+      scrolledPx >= vh(FLIGHT_START_VH - 2) && scrolledPx <= vh(RETURN_END_VH + 2);
+    if (!engaged) {
+      releaseChars();
+      return;
+    }
+    engageChars();
+
+    const outStagger = vh(FLIGHT_END_VH - FLIGHT_START_VH - LETTER_FLIGHT_VH);
+    const backStagger = vh(RETURN_END_VH - RETURN_START_VH - LETTER_FADE_VH);
+    const n = charLayout.chars.length;
+
+    charLayout.chars.forEach((c, i) => {
+      const fx = charFx[i];
+      // Mostly reading order, lightly shuffled, so the article empties from the
+      // top down without the letters leaving in a rigid mechanical sweep.
+      const order = (i / Math.max(n - 1, 1)) * 0.85 + fx.jitter * 0.15;
+      const out = clamp(
+        (scrolledPx - (vh(FLIGHT_START_VH) + order * outStagger)) / vh(LETTER_FLIGHT_VH),
+        0, 1
+      );
+      // Reuses `order`, so the article replenishes from the top in the same
+      // sequence it emptied.
+      const back = clamp(
+        (scrolledPx - (vh(RETURN_START_VH) + order * backStagger)) / vh(LETTER_FADE_VH),
+        0, 1
+      );
+
+      // The letter is already invisible at the far end of its arc, so dropping
+      // the transform and ramping opacity from home reads as the text
+      // replenishing in place rather than flying back down.
+      if (back > 0) {
+        c.el.style.transform = "";
+        c.el.style.opacity = back >= 1 ? "" : String(back);
+        if (c.el.textContent !== fx.original) c.el.textContent = fx.original;
+        return;
+      }
+
+      const t = out;
+      if (t === 0) {
+        c.el.style.transform = "";
+        c.el.style.opacity = "";
+        if (c.el.textContent !== fx.original) c.el.textContent = fx.original;
+        return;
+      }
+
+      const e = easeInOut(t);
+      const bow = Math.sin(Math.PI * t);
+      const x = c.dx * e + fx.arcX * bow;
+      const y = c.dy * e + fx.arcY * bow;
+      const rot = fx.spin * e;
+      const scale = 1 - 0.15 * e;
+      // Fades out only over the last stretch, so it's still legible as a letter
+      // for most of the trip and only dissolves as it merges into the hash.
+      const opacity = 1 - clamp((t - 0.7) / 0.3, 0, 1);
+
+      c.el.style.transform =
+        `translate(${x}px, ${y}px) rotate(${rot}deg) scale(${scale})`;
+      c.el.style.opacity = String(opacity);
+
+      // Scrambles into a hex digit mid-flight — the letter arrives as part of
+      // the fingerprint, not as itself.
+      const shown = t > 0.5 ? fx.digit : fx.original;
+      if (c.el.textContent !== shown) c.el.textContent = shown;
+    });
+
+    // Hash resolves left to right off overall flight progress rather than off
+    // whichever letter happens to land on each slot first — slots are assigned
+    // at random, so per-slot arrival would fill it in a scattered order. It
+    // unresolves the same way as the text fades back in.
+    const outT = clamp(
+      (scrolledPx - vh(FLIGHT_START_VH)) / (vh(FLIGHT_END_VH) - vh(FLIGHT_START_VH)), 0, 1
+    );
+    const backT = clamp(
+      (scrolledPx - vh(RETURN_START_VH)) / (vh(RETURN_END_VH) - vh(RETURN_START_VH)), 0, 1
+    );
+    const filled = Math.round(clamp(outT - backT, 0, 1) * hashDigitEls.length);
+    hashDigitEls.forEach((el, i) => {
+      el.classList.toggle("is-filled", i < filled);
+    });
   }
 
   function updateSplitProgress() {
@@ -242,39 +489,58 @@
     const scrollable = splitSpacer.offsetHeight - splitStage.offsetHeight;
     const scrolledPx = clamp(-rect.top, 0, Math.max(scrollable, 1));
 
-    // Beat 2: highlights fade in once the split section has settled at the
-    // top of the viewport, and fade back out on the same curve when
+    // Beat 4 (first): the article arrives unannotated, alone on the left, and
+    // the hash panel fades in beside it. The quotes are held back until the
+    // letters have flown out and come home again.
+    const hashInT = clamp((scrolledPx - vh(12)) / (vh(30) - vh(12)), 0, 1);
+    const hashOutT = clamp((scrolledPx - vh(348)) / (vh(366) - vh(348)), 0, 1);
+    hashColumn.style.opacity = String(hashInT * (1 - hashOutT));
+
+    updateCharFlight(scrolledPx);
+
+    // Note fades out again as the letters start flying home — by then the point
+    // has been made, and the return flight is the thing to be watching.
+    const noteInT = clamp((scrolledPx - vh(156)) / (vh(186) - vh(156)), 0, 1);
+    const noteOutT = clamp((scrolledPx - vh(240)) / (vh(262) - vh(240)), 0, 1);
+    hashNoteEl.style.opacity = String(noteInT * (1 - noteOutT));
+
+    // Beat 2: the quotes cross-fade in as the hash leaves, once the article has
+    // fully reassembled — the payoff for the return flight.
+    const quotesInT = clamp((scrolledPx - vh(348)) / (vh(366) - vh(348)), 0, 1);
+
+    // Beat 2: highlights fade in, and fade back out on the same curve when
     // scrolling back up — continuously tied to scroll position, same as
     // .hero-highlight, rather than a one-time reveal that only runs forward.
-    const markT = clamp((scrolledPx - vh(10.5)) / (vh(24.5) - vh(10.5)), 0, 1);
+    const markT = clamp((scrolledPx - vh(380)) / (vh(394) - vh(380)), 0, 1);
     markEls.forEach((m) => {
       const tone = m.classList.contains("flag-verified") ? "flag-verified" : "flag-altered";
       m.style.backgroundColor = `hsla(var(${MARK_COLOR_VAR[tone]}), ${markT * MARK_MAX_ALPHA[tone]})`;
     });
 
     // Beat 3: article fades out fully first, then quotes slides into its
-    // place — sequential, not simultaneous. Starts at 55vh, not 40vh, to
-    // leave a longer pause (24.5-55vh) after the Carolina marks finish
-    // fading in, so the highlight has a moment to register.
-    const fadeT = clamp((scrolledPx - vh(55)) / (vh(65) - vh(55)), 0, 1);
+    // place — sequential, not simultaneous. The pause before it (394-424vh)
+    // gives the Carolina marks a moment to register.
+    const fadeT = clamp((scrolledPx - vh(424)) / (vh(434) - vh(424)), 0, 1);
     articleClip.style.opacity = String(1 - fadeT);
 
-    const slideT = clamp((scrolledPx - vh(65)) / (vh(77) - vh(65)), 0, 1);
+    const slideT = clamp((scrolledPx - vh(434)) / (vh(446) - vh(434)), 0, 1);
+    quotesEl.style.opacity = String(quotesInT);
     quotesEl.style.transform = `translateX(${quotesShiftX() * slideT}px)`;
 
     // Beat 3: lead-in line slides in from the right, holds, then exits via a
     // cross dissolve (opacity only, no reverse slide) rather than sliding
     // back out the way it came in.
-    const leadEnterT = clamp((scrolledPx - vh(95)) / (vh(113) - vh(95)), 0, 1);
-    const leadExitT = clamp((scrolledPx - vh(129)) / (vh(145) - vh(129)), 0, 1);
+    const leadEnterT = clamp((scrolledPx - vh(464)) / (vh(482) - vh(464)), 0, 1);
+    const leadExitT = clamp((scrolledPx - vh(498)) / (vh(514) - vh(498)), 0, 1);
     leadColumn.style.transform = `translateX(${(1 - leadEnterT) * 100}%)`;
     leadColumn.style.opacity = String(1 - leadExitT);
 
     // Beat 3: verified/invalid column slides in from the right to where
-    // quotes started, once the lead-in line has dissolved away. Rests further
-    // right than a 100% shift so its box-shadow's blur radius doesn't creep
-    // into .split-grid's clipped (overflow-x: hidden) area while off-screen.
-    const enterT = clamp((scrolledPx - vh(145)) / (vh(181) - vh(145)), 0, 1);
+    // quotes started, starting as the lead-in line begins dissolving so the two
+    // overlap rather than running back to back. Rests further right than a 100%
+    // shift so its box-shadow's blur radius doesn't creep into .split-grid's
+    // clipped (overflow-x: hidden) area while off-screen.
+    const enterT = clamp((scrolledPx - vh(498)) / (vh(550) - vh(498)), 0, 1);
     revealColumn.style.transform = `translateX(${(1 - enterT) * 140}%)`;
 
     positionFillerCards();
@@ -294,7 +560,13 @@
   }
 
   window.addEventListener("scroll", onScrollOrResize, { passive: true });
-  window.addEventListener("resize", onScrollOrResize);
+  // Beat 4's letter positions are pixel measurements of the old layout, so they
+  // have to be thrown away and re-measured against the new one.
+  window.addEventListener("resize", () => {
+    releaseChars();
+    charLayout = null;
+    onScrollOrResize();
+  });
   frontPageImg.addEventListener("load", onScrollOrResize);
   onScrollOrResize();
 

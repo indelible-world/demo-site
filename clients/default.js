@@ -82,5 +82,17 @@ window.SITE_CONFIG = {
     ],
     lowerLabel: "INVALID",
     lowerText: "    The Merkle proof could not be verified against the on-chain attestation."
+  },
+
+  // Beat 4: the article returns on the left, then every letter of it flies
+  // across and scrambles into the fingerprint on the right — nothing but the
+  // fingerprint is ever written to the chain.
+  beat4: {
+    hashLabel: "STORED ON-CHAIN",
+    hashPrefix: "0x",
+    // Must be a plain hex string — each character becomes one landing slot for
+    // the article's letters, so its length sets how the hash fills in.
+    hash: "3f8a1c05d7b26e94af0c5183be27d4f6a9152c7e0db438f1c6a2e59d70b4183c",
+    note: "This fingerprint is all that is stored. The article itself never leaves the newsroom — the text cannot be reconstructed from it, only checked against it."
   }
 };

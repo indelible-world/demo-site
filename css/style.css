@@ -266,8 +266,12 @@ html, body {
   align-items: start;
   /* .reveal-column rests off to the right (see below) until beat 3 slides it
      in; clip that here rather than on an ancestor of .split-stage, which
-     would silently break its position: sticky (bit us once already). */
-  overflow-x: hidden;
+     would silently break its position: sticky (bit us once already).
+     `clip` rather than `hidden`, so the other axis can stay `visible` —
+     `hidden` on one axis forces the other to `auto`, which gave this grid its
+     own nested vertical scrollbar alongside the page's. */
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 /* Explicit placement for all three, not just .reveal-column: explicit-position

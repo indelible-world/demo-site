@@ -196,7 +196,7 @@
   const fillerLowerEl = document.getElementById("filler-lower");
   const markEls = document.querySelectorAll("mark.flag");
   const MARK_MAX_ALPHA = { "flag-verified": 0.28, "flag-altered": 0.4 };
-  const MARK_COLOR_VAR = { "flag-verified": "--accent-green", "flag-altered": "--accent-pink" };
+  const MARK_COLOR_VAR = { "flag-verified": "--accent-green", "flag-altered": "--accent-red" };
 
   // How far .quotes must travel left to land where .article-clip's column
   // sits, derived from the grid's own (untransformed) geometry rather than

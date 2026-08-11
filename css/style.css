@@ -426,8 +426,7 @@ html, body {
 
 .lead-text p {
   margin: 0;
-  font-family: var(--inter);
-  font-size: 1.35rem;
+  font-size: 1.55rem;
   line-height: 1.45;
   font-weight: 500;
   color: var(--ink);

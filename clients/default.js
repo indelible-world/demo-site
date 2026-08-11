@@ -67,8 +67,7 @@ window.SITE_CONFIG = {
     }
   },
 
-  // Beat 3: placeholder copy for the two blocks that slide in to replace
-  // the quotes column. Swap for real content once this beat is designed.
+  // Beat 3: two blocks that slide in to replace the quotes column.
   beat3: {
     // Larger lead-in line that slides in first, holds, then slides back out
     // before the verified/invalid blocks take its place.

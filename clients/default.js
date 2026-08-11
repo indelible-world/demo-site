@@ -12,22 +12,22 @@ window.SITE_CONFIG = {
     logo: "Indelible",
     eyebrow: "Blockchain-verified provenance",
     heading: "Restoring trust in news and information.",
-    subtext: "An immutable, transparent system for content verification and attribution — so authentic information is easily verifiable, creators are properly credited, and misinformation is rapidly identifiable.",
+    subtext: "indelible.world is building a protocol for establishing verifiable, on-chain authorship of digital content, without relying on any centralized platform, server, or authority.",
     features: [
       {
-        icon: "🔒",
-        title: "Immutable Verification",
-        body: "Content is permanently recorded with blockchain-verified provenance that cannot be altered or erased."
+        icon: "⏱️",
+        title: "Article Timestamping",
+        body: "Fingerprints of articles are certified with blockchain-verified timestamps that cannot be altered or erased."
       },
       {
         icon: "👥",
-        title: "Creator Attribution",
-        body: "Every piece of content is traceable to its original source, ensuring proper credit and accountability."
+        title: "Authorship Attestation",
+        body: "Articles can be verifiably attributed to a specific news organization."
       },
       {
-        icon: "✔️",
-        title: "Trust at a Glance",
-        body: "Instantly distinguish verified, authentic content from unverified or manipulated information."
+        icon: "💬",
+        title: "Native Quote Verification",
+        body: "Quotes can be attributed to their original authors without requiring the full text of the article on standby."
       }
     ]
   },

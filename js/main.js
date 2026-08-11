@@ -70,10 +70,20 @@
 
   document.querySelector("#lead-text p").textContent = cfg.beat3.leadText;
 
-  document.querySelector("#filler-upper .quote-badge").textContent = cfg.beat3.upperLabel;
-  document.querySelector("#filler-upper p").textContent = cfg.beat3.upperText;
-  document.querySelector("#filler-lower .quote-badge").textContent = cfg.beat3.lowerLabel;
-  document.querySelector("#filler-lower p").textContent = cfg.beat3.lowerText;
+  fillFillerCard(document.getElementById("filler-upper"), cfg.beat3.upperLabel, cfg.beat3.upperText);
+  fillFillerCard(document.getElementById("filler-lower"), cfg.beat3.lowerLabel, cfg.beat3.lowerText);
+
+  // `text` may be a string or an array of strings — an array renders one
+  // paragraph per entry, so a card's copy can be broken into separate blocks.
+  function fillFillerCard(card, label, text) {
+    card.querySelector(".quote-badge").textContent = label;
+    card.querySelectorAll("p").forEach((p) => p.remove());
+    (Array.isArray(text) ? text : [text]).forEach((line) => {
+      const p = document.createElement("p");
+      p.textContent = line;
+      card.appendChild(p);
+    });
+  }
 
   // ---------- Intro fade-out ----------
 

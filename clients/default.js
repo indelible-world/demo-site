@@ -73,9 +73,14 @@ window.SITE_CONFIG = {
     // Larger lead-in line that slides in first, holds, then slides back out
     // before the verified/invalid blocks take its place.
     leadText: "Each quote is checked against an immutable fingerprint of the original published text...",
+    // upperText/lowerText take either a single string or an array of strings —
+    // an array renders as separate paragraphs within the same card.
     upperLabel: "VERIFIED",
-    upperText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    upperText: [
+      "Published by 0xD2f2c95962632B4742703CC058889c624380C748 at 6/22/2026, 8:38:00 PM.",
+      "ENS: nytimes.eth, indelibleworld.eth, test25.eth"
+    ],
     lowerLabel: "INVALID",
-    lowerText: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+    lowerText: "    The Merkle proof could not be verified against the on-chain attestation."
   }
 };

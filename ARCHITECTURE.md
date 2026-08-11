@@ -145,20 +145,29 @@ How the letter flight works:
   comes from a deterministic hash-based `rand(seed)`, computed once at init —
   `Math.random()` per frame would make the letters jitter.
 
-### Beat 5 — the price (same stage)
+### Beat 3.5 — ownership (same stage)
 1. Beat 3's two blocks clear the stage in opposite directions: `.quotes`
    (already parked in the article's column) continues off to the left, and
    `.reveal-column` retreats off to the right the way it came in. Both exits
    are layered onto the same `transform` their earlier beats set, so the two
    phases compose rather than fight.
-2. `.price-block` drops into the space they vacate, oversized and easing down
-   to full size so it reads as an impact rather than a fade.
+2. `.ownership-block` rises into the space they vacate — heading first, then
+   the keys/control/rights pillars on a per-item stagger, so the three read in
+   sequence rather than appearing as one slab.
+3. It holds, then lifts away and dissolves so beat 5 can land on the same spot.
 
-`.price-column` spans `grid-column: 1 / -1` rather than sharing column 2, so
-the `$0` centres across the whole grid; it's still vertically centred on the
-quote cards' span via `centerOn()` so it lands on the same eye line every
-other beat has held. The drop carries the motion because `.split-grid` clips
-the x axis but leaves y visible.
+Copy comes from `cfg.ownership` (`heading` plus an `items` array of
+`{ icon, title, body }`); the 3-up grid assumes three items.
+
+### Beat 5 — the price (same stage)
+`.price-block` drops into the space beat 3.5's pillars vacate, oversized and
+easing down to full size so it reads as an impact rather than a fade.
+
+`.price-column` and `.ownership-column` both span `grid-column: 1 / -1` rather
+than sharing column 2, so they centre across the whole grid; they're still
+vertically centred on the quote cards' span via `centerOn()` so they land on the
+same eye line every other beat has held. The drop carries the motion because
+`.split-grid` clips the x axis but leaves y visible.
 
 ## Conventions worth keeping
 

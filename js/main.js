@@ -85,6 +85,19 @@
     });
   }
 
+  document.getElementById("ownership-heading").textContent = cfg.ownership.heading;
+  const ownershipItemsEl = document.getElementById("ownership-items");
+  (cfg.ownership.items || []).forEach((item) => {
+    const el = document.createElement("div");
+    el.className = "ownership-item";
+    el.innerHTML = '<div class="ownership-item-icon"></div><h3></h3><p></p>';
+    el.querySelector(".ownership-item-icon").textContent = item.icon;
+    el.querySelector("h3").textContent = item.title;
+    el.querySelector("p").textContent = item.body;
+    ownershipItemsEl.appendChild(el);
+  });
+  const ownershipItemEls = Array.from(ownershipItemsEl.children);
+
   document.getElementById("price-amount").textContent = cfg.beat5.amount;
   document.getElementById("price-caption").textContent = cfg.beat5.caption;
 
@@ -217,6 +230,7 @@
   const revealColumn = document.querySelector(".reveal-column");
   const fillerUpperEl = document.getElementById("filler-upper");
   const fillerLowerEl = document.getElementById("filler-lower");
+  const ownershipBlockEl = document.getElementById("ownership-block");
   const priceBlockEl = document.getElementById("price-block");
   const markEls = document.querySelectorAll("mark.flag");
   const MARK_MAX_ALPHA = { "flag-verified": 0.28, "flag-altered": 0.4 };
@@ -254,8 +268,9 @@
     // either one individually — it reads as one line, not paired with either.
     centerOn(leadTextEl, quotesEl, quotesTop);
     centerOn(hashPanel, quotesEl, quotesTop);
-    // Beat 5 spans both columns, but still centers on the quote cards' span so
-    // the $0 lands on the same eye line everything else has held.
+    // Beats 3.5 and 5 span both columns, but still center on the quote cards'
+    // span so they land on the same eye line everything else has held.
+    centerOn(ownershipBlockEl, quotesEl, quotesTop);
     centerOn(priceBlockEl, quotesEl, quotesTop);
   }
 
@@ -550,7 +565,7 @@
     // clipped (overflow-x: hidden) area while off-screen.
     const enterT = clamp((scrolledPx - vh(420)) / (vh(472) - vh(420)), 0, 1);
 
-    // Beat 5: beat 3's two blocks clear the stage in opposite directions —
+    // Beat 3.5: beat 3's two blocks clear the stage in opposite directions —
     // the quotes (already parked in the article's column) continue off left,
     // the verified/invalid column retreats off right the way it came in.
     const clearT = easeInOut(clamp((scrolledPx - vh(580)) / (vh(598) - vh(580)), 0, 1));
@@ -558,11 +573,29 @@
     quotesEl.style.transform = `translateX(${quotesX}px)`;
     revealColumn.style.transform = `translateX(${((1 - enterT) + clearT) * 140}%)`;
 
+    // Beat 3.5: the three pillars rise into the space just vacated, each on its
+    // own stagger, hold, then lift away together so beat 5 can land there.
+    const ownIn = clamp((scrolledPx - vh(580)) / (vh(622) - vh(580)), 0, 1);
+    const ownOut = clamp((scrolledPx - vh(700)) / (vh(718) - vh(700)), 0, 1);
+    ownershipBlockEl.style.opacity = String(clamp(ownIn / 0.25, 0, 1) * (1 - ownOut));
+    const ownHeadE = 1 - Math.pow(1 - clamp(ownIn / 0.5, 0, 1), 3);
+    ownershipBlockEl.style.transform = `translateY(${(1 - ownHeadE) * 5 - ownOut * 6}vh)`;
+    // Staggered across the last three quarters of the entrance, so the heading
+    // is already settled as the first pillar arrives.
+    const OWN_SPAN = 0.75;
+    ownershipItemEls.forEach((el, i) => {
+      const start = 0.25 + (i / Math.max(ownershipItemEls.length, 1)) * OWN_SPAN;
+      const t = clamp((ownIn - start) / (OWN_SPAN / Math.max(ownershipItemEls.length, 1)), 0, 1);
+      const e = 1 - Math.pow(1 - t, 3);
+      el.style.opacity = String(t);
+      el.style.transform = `translateY(${(1 - e) * 4}vh)`;
+    });
+
     // Beat 5: drops in oversized and slams down to full size, so it reads as an
     // impact rather than a fade — hence ease-out only, no symmetric ease. Scale
     // overshoot stays modest because .split-grid clips the x axis; the drop
     // carries the weight instead, since the y axis is unclipped.
-    const crashT = clamp((scrolledPx - vh(580)) / (vh(616) - vh(580)), 0, 1);
+    const crashT = clamp((scrolledPx - vh(712)) / (vh(748) - vh(712)), 0, 1);
     const crashE = 1 - Math.pow(1 - crashT, 3);
     priceBlockEl.style.opacity = String(clamp(crashT / 0.3, 0, 1));
     priceBlockEl.style.transform =

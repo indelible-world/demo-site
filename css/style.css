@@ -243,16 +243,20 @@ html, body {
      420  - 436vh   beat 3: lead-in line dissolves out (cross dissolve, not a slide)
      420  - 472vh   beat 3: verified/invalid column slides in from the right,
                     overlapping the lead-in line's dissolve above
-     550  - 580vh   hold (pause before beat 5 clears the stage)
-     580  - 598vh   beat 5: beat 3's two blocks slide out left and right
-     594  - 616vh   beat 5: the $0 crashes into the space they vacated,
-                    overlapping the tail of their exit above
-     616  - 820vh   hold, then release into normal scroll */
+     550  - 580vh   hold (pause before beat 3.5 clears the stage)
+     580  - 598vh   beat 3.5: beat 3's two blocks slide out left and right
+     594  - 622vh   beat 3.5: keys/control/rights pillars rise into the space
+                    they vacated, staggered, overlapping the tail of that exit
+     622  - 700vh   hold (pillars stay up to be read)
+     700  - 718vh   beat 3.5: pillars lift away and dissolve out
+     712  - 748vh   beat 5: the $0 crashes into the space they vacated,
+                    overlapping the tail of the pillars' exit above
+     748  - 952vh   hold, then release into normal scroll */
 .split-spacer {
   position: relative;
   z-index: 1;
   background: var(--paper);
-  height: 920vh;
+  height: 1052vh;
   margin-top: -48vh;
 }
 
@@ -301,9 +305,14 @@ html, body {
   .quotes,
   .reveal-column,
   .hash-column,
+  .ownership-column,
   .price-column {
     grid-column: 1;
     grid-row: auto;
+  }
+
+  .ownership-items {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -537,9 +546,73 @@ html, body {
   word-break: break-all;
 }
 
+/* Beat 3.5: spans the full grid like .price-column below, so the three pillars
+   fill the width beat 3's two blocks vacate. Opacity/transform from js/main.js. */
+.ownership-column {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  position: relative;
+  pointer-events: none;
+}
+
+/* Positioned absolutely with `top` set in js/main.js, centered on the same
+   vertical span the quote cards occupied — same approach as .filler-card. */
+.ownership-block {
+  position: absolute;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.ownership-heading {
+  margin: 0 0 3rem;
+  text-align: center;
+  font-family: var(--sans);
+  font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.ownership-items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.4rem;
+}
+
+/* Each pillar rises on its own stagger — js/main.js writes the transform and
+   opacity per item, so they arrive in sequence rather than as one block. */
+.ownership-item {
+  font-family: var(--sans);
+  text-align: left;
+  border-top: 3px solid hsl(var(--accent-blue));
+  padding-top: 1.1rem;
+}
+
+.ownership-item-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  margin-bottom: 0.9rem;
+}
+
+.ownership-item h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ownership-item p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: #555;
+}
+
 /* Beat 5: spans the full grid rather than sharing the quotes column, so the
-   $0 lands centered in the gap left by beat 3's two blocks clearing off to
-   either side. Scale/opacity are driven from js/main.js. */
+   $0 lands centered in the gap left by beat 3.5's pillars clearing out.
+   Scale/opacity are driven from js/main.js. */
 .price-column {
   grid-column: 1 / -1;
   grid-row: 1;

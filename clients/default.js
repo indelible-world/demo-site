@@ -95,8 +95,31 @@ window.SITE_CONFIG = {
     note: "This fingerprint is all that is stored. The article text cannot be reconstructed from it, only checked against it."
   },
 
-  // Beat 5: both beat 3 blocks clear off to the left and right, and this
-  // crashes into the empty space they leave behind.
+  // Beat 3.5: beat 3's two blocks clear off to the left and right, and these
+  // three pillars rise into the space they leave, hold, then clear out for
+  // beat 5. Three items are assumed by the layout (a 3-up grid).
+  ownership: {
+    heading: "Every article stays entirely yours.",
+    items: [
+      {
+        icon: "🔑",
+        title: "Keys",
+        body: "Root signing keys never leave the newsroom. You only delegate access to a secure Indelible key which can be revoked at any time.."
+      },
+      {
+        icon: "🎛️",
+        title: "Control",
+        body: "You can completely revoke our key's ability to sign articles on your behalf at any time, and you have seven days to revoke any erroneous attestations. We only certify articles on your (API) request."
+      },
+      {
+        icon: "©",
+        title: "Rights",
+        body: "Copyright and licensing stay with you. The on-chain record proves authorship & never transfers or shares ownership of the work. The full text of the article is never republished without your permission."
+      }
+    ]
+  },
+
+  // Beat 5: after the pillars above clear, this crashes into the empty space.
   beat5: {
     amount: "$0",
     caption: "Free Verifications Forever & Free Certifications for Pilot Partners"

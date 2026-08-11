@@ -145,6 +145,21 @@ How the letter flight works:
   comes from a deterministic hash-based `rand(seed)`, computed once at init —
   `Math.random()` per frame would make the letters jitter.
 
+### Beat 5 — the price (same stage)
+1. Beat 3's two blocks clear the stage in opposite directions: `.quotes`
+   (already parked in the article's column) continues off to the left, and
+   `.reveal-column` retreats off to the right the way it came in. Both exits
+   are layered onto the same `transform` their earlier beats set, so the two
+   phases compose rather than fight.
+2. `.price-block` drops into the space they vacate, oversized and easing down
+   to full size so it reads as an impact rather than a fade.
+
+`.price-column` spans `grid-column: 1 / -1` rather than sharing column 2, so
+the `$0` centres across the whole grid; it's still vertically centred on the
+quote cards' span via `centerOn()` so it lands on the same eye line every
+other beat has held. The drop carries the motion because `.split-grid` clips
+the x axis but leaves y visible.
+
 ## Conventions worth keeping
 
 - Copy lives in `clients/*.js`, never in HTML or JS.

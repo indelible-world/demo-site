@@ -93,5 +93,12 @@ window.SITE_CONFIG = {
     // the article's letters, so its length sets how the hash fills in.
     hash: "3f8a1c05d7b26e94af0c5183be27d4f6a9152c7e0db438f1c6a2e59d70b4183c",
     note: "This fingerprint is all that is stored. The article itself never leaves the newsroom — the text cannot be reconstructed from it, only checked against it."
+  },
+
+  // Beat 5: both beat 3 blocks clear off to the left and right, and this
+  // crashes into the empty space they leave behind.
+  beat5: {
+    amount: "$0",
+    caption: "Free Certifications & Verifications"
   }
 };

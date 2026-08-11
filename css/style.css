@@ -222,24 +222,28 @@ html, body {
      0    - 48vh    hold (article and hash panel in place, as published)
      48   - 156vh   beat 4: article letters fly across and jumble into the hash
                     (each letter's own flight lasts LETTER_FLIGHT_VH of this)
-     156  - 186vh   beat 4: "nothing is stored" note fades in
+     156  - 186vh   beat 4: "nothing is stored" note fades in (and stays up —
+                    it leaves with the panel, not on its own)
      186  - 240vh   hold (empty article beside the resolved hash)
-     240  - 262vh   beat 4: note fades out as the text starts replenishing
-     240  - 348vh   beat 4: letters fade back in at home (no reverse flight),
-                    top down in the order they left, hash unresolves alongside
-     348  - 366vh   beat 2: hash panel dissolves out as the quotes fade in
-     366  - 380vh   hold
-     380  - 394vh   beat 2: quote/article marks fade in
-     394  - 424vh   hold (pause so the Carolina marks register before beat 3)
-     424  - 434vh   beat 3: article fades out (finishes before the slide starts)
-     434  - 446vh   beat 3: quotes slide left
-     446  - 464vh   hold (pause before the lead-in line enters)
-     464  - 482vh   beat 3: lead-in line slides in from the right
-     482  - 498vh   hold (lead-in line stays put)
-     498  - 514vh   beat 3: lead-in line dissolves out (cross dissolve, not a slide)
-     498  - 550vh   beat 3: verified/invalid column slides in from the right,
+     240  - 285vh   beat 4: letters fade back in at home (no reverse flight),
+                    top down in the order they left; the hash stays resolved.
+                    Much shorter than the outbound flight — the text snaps back
+                    rather than trickling in.
+     270  - 288vh   beat 2: hash panel dissolves out (taking the hash text and
+                    note with it) as the quotes fade in, overlapping the tail of
+                    the return above so the article refills as the cards arrive
+     288  - 302vh   hold
+     302  - 316vh   beat 2: quote/article marks fade in
+     316  - 346vh   hold (pause so the Carolina marks register before beat 3)
+     346  - 356vh   beat 3: article fades out (finishes before the slide starts)
+     356  - 368vh   beat 3: quotes slide left
+     368  - 386vh   hold (pause before the lead-in line enters)
+     386  - 404vh   beat 3: lead-in line slides in from the right
+     404  - 420vh   hold (lead-in line stays put)
+     420  - 436vh   beat 3: lead-in line dissolves out (cross dissolve, not a slide)
+     420  - 472vh   beat 3: verified/invalid column slides in from the right,
                     overlapping the lead-in line's dissolve above
-     550  - 700vh   hold, then release into normal scroll */
+     472  - 700vh   hold, then release into normal scroll */
 .split-spacer {
   position: relative;
   z-index: 1;
@@ -266,12 +270,8 @@ html, body {
   align-items: start;
   /* .reveal-column rests off to the right (see below) until beat 3 slides it
      in; clip that here rather than on an ancestor of .split-stage, which
-     would silently break its position: sticky (bit us once already).
-     `clip` rather than `hidden`, so the other axis can stay `visible` —
-     `hidden` on one axis forces the other to `auto`, which gave this grid its
-     own nested vertical scrollbar alongside the page's. */
-  overflow-x: clip;
-  overflow-y: visible;
+     would silently break its position: sticky (bit us once already). */
+  overflow-x: hidden;
 }
 
 /* Explicit placement for all three, not just .reveal-column: explicit-position

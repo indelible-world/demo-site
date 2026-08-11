@@ -260,11 +260,13 @@
   // remainder is the stagger spread across all letters. The return is a fade,
   // not a flight, so it wants a shorter per-letter duration than the outbound.
   const LETTER_FLIGHT_VH = 26;
-  const LETTER_FADE_VH = 12;
+  const LETTER_FADE_VH = 8;
   const FLIGHT_START_VH = 48;
   const FLIGHT_END_VH = 156;
+  // The return is deliberately far shorter than the outbound flight — the text
+  // snaps back as the quotes arrive rather than trickling in over a long hold.
   const RETURN_START_VH = 240;
-  const RETURN_END_VH = 348;
+  const RETURN_END_VH = 285;
 
   // Deterministic per-index pseudo-random. Math.random() per frame would make
   // each letter re-roll its arc every scroll tick and jitter in place.
@@ -373,7 +375,10 @@
     charsEngaged = true;
   }
 
-  function releaseChars() {
+  // `resetHash` only when releasing above the beat: on the way out the panel is
+  // mid-fade and still visible, so clearing the digits there would flash the
+  // hash dimming just before it disappears.
+  function releaseChars(resetHash) {
     if (!charsEngaged) return;
     articleBody.classList.remove("is-flying");
     charLayout.paras.forEach((p) => {
@@ -383,7 +388,7 @@
       c.el.style.cssText = "";
       c.el.textContent = charFx[i].original;
     });
-    hashDigitEls.forEach((el) => el.classList.remove("is-filled"));
+    if (resetHash) hashDigitEls.forEach((el) => el.classList.remove("is-filled"));
     charsEngaged = false;
   }
 
@@ -399,7 +404,7 @@
     const engaged =
       scrolledPx >= vh(FLIGHT_START_VH - 2) && scrolledPx <= vh(RETURN_END_VH + 2);
     if (!engaged) {
-      releaseChars();
+      releaseChars(scrolledPx < vh(FLIGHT_START_VH - 2));
       return;
     }
     engageChars();
@@ -464,15 +469,13 @@
 
     // Hash resolves left to right off overall flight progress rather than off
     // whichever letter happens to land on each slot first — slots are assigned
-    // at random, so per-slot arrival would fill it in a scattered order. It
-    // unresolves the same way as the text fades back in.
+    // at random, so per-slot arrival would fill it in a scattered order. Once
+    // resolved it stays resolved: the fingerprint persists, and it leaves only
+    // with the whole panel's fade in beat 2.
     const outT = clamp(
       (scrolledPx - vh(FLIGHT_START_VH)) / (vh(FLIGHT_END_VH) - vh(FLIGHT_START_VH)), 0, 1
     );
-    const backT = clamp(
-      (scrolledPx - vh(RETURN_START_VH)) / (vh(RETURN_END_VH) - vh(RETURN_START_VH)), 0, 1
-    );
-    const filled = Math.round(clamp(outT - backT, 0, 1) * hashDigitEls.length);
+    const filled = Math.round(outT * hashDigitEls.length);
     hashDigitEls.forEach((el, i) => {
       el.classList.toggle("is-filled", i < filled);
     });
@@ -493,45 +496,43 @@
     // column from the start, so it scrolls in with the article rather than
     // animating in on its own. Its only move is dissolving out for beat 2, once
     // the letters have flown out and faded home again.
-    const hashOutT = clamp((scrolledPx - vh(348)) / (vh(366) - vh(348)), 0, 1);
+    const hashOutT = clamp((scrolledPx - vh(270)) / (vh(288) - vh(270)), 0, 1);
     hashColumn.style.opacity = String(1 - hashOutT);
 
     updateCharFlight(scrolledPx);
 
-    // Note fades out again as the letters start flying home — by then the point
-    // has been made, and the return flight is the thing to be watching.
+    // Stays up once shown — it leaves with the panel's own fade, not on its own.
     const noteInT = clamp((scrolledPx - vh(156)) / (vh(186) - vh(156)), 0, 1);
-    const noteOutT = clamp((scrolledPx - vh(240)) / (vh(262) - vh(240)), 0, 1);
-    hashNoteEl.style.opacity = String(noteInT * (1 - noteOutT));
+    hashNoteEl.style.opacity = String(noteInT);
 
-    // Beat 2: the quotes cross-fade in as the hash leaves, once the article has
-    // fully reassembled — the payoff for the return flight.
-    const quotesInT = clamp((scrolledPx - vh(348)) / (vh(366) - vh(348)), 0, 1);
+    // Beat 2: the quotes cross-fade in as the hash leaves, overlapping the tail
+    // of the letters' return so the article refills as the cards arrive.
+    const quotesInT = clamp((scrolledPx - vh(270)) / (vh(288) - vh(270)), 0, 1);
 
     // Beat 2: highlights fade in, and fade back out on the same curve when
     // scrolling back up — continuously tied to scroll position, same as
     // .hero-highlight, rather than a one-time reveal that only runs forward.
-    const markT = clamp((scrolledPx - vh(380)) / (vh(394) - vh(380)), 0, 1);
+    const markT = clamp((scrolledPx - vh(302)) / (vh(316) - vh(302)), 0, 1);
     markEls.forEach((m) => {
       const tone = m.classList.contains("flag-verified") ? "flag-verified" : "flag-altered";
       m.style.backgroundColor = `hsla(var(${MARK_COLOR_VAR[tone]}), ${markT * MARK_MAX_ALPHA[tone]})`;
     });
 
     // Beat 3: article fades out fully first, then quotes slides into its
-    // place — sequential, not simultaneous. The pause before it (394-424vh)
+    // place — sequential, not simultaneous. The pause before it (316-346vh)
     // gives the Carolina marks a moment to register.
-    const fadeT = clamp((scrolledPx - vh(424)) / (vh(434) - vh(424)), 0, 1);
+    const fadeT = clamp((scrolledPx - vh(346)) / (vh(356) - vh(346)), 0, 1);
     articleClip.style.opacity = String(1 - fadeT);
 
-    const slideT = clamp((scrolledPx - vh(434)) / (vh(446) - vh(434)), 0, 1);
+    const slideT = clamp((scrolledPx - vh(356)) / (vh(368) - vh(356)), 0, 1);
     quotesEl.style.opacity = String(quotesInT);
     quotesEl.style.transform = `translateX(${quotesShiftX() * slideT}px)`;
 
     // Beat 3: lead-in line slides in from the right, holds, then exits via a
     // cross dissolve (opacity only, no reverse slide) rather than sliding
     // back out the way it came in.
-    const leadEnterT = clamp((scrolledPx - vh(464)) / (vh(482) - vh(464)), 0, 1);
-    const leadExitT = clamp((scrolledPx - vh(498)) / (vh(514) - vh(498)), 0, 1);
+    const leadEnterT = clamp((scrolledPx - vh(386)) / (vh(404) - vh(386)), 0, 1);
+    const leadExitT = clamp((scrolledPx - vh(420)) / (vh(436) - vh(420)), 0, 1);
     leadColumn.style.transform = `translateX(${(1 - leadEnterT) * 100}%)`;
     leadColumn.style.opacity = String(1 - leadExitT);
 
@@ -540,7 +541,7 @@
     // overlap rather than running back to back. Rests further right than a 100%
     // shift so its box-shadow's blur radius doesn't creep into .split-grid's
     // clipped (overflow-x: hidden) area while off-screen.
-    const enterT = clamp((scrolledPx - vh(498)) / (vh(550) - vh(498)), 0, 1);
+    const enterT = clamp((scrolledPx - vh(420)) / (vh(472) - vh(420)), 0, 1);
     revealColumn.style.transform = `translateX(${(1 - enterT) * 140}%)`;
 
     positionFillerCards();
@@ -563,7 +564,7 @@
   // Beat 4's letter positions are pixel measurements of the old layout, so they
   // have to be thrown away and re-measured against the new one.
   window.addEventListener("resize", () => {
-    releaseChars();
+    releaseChars(true);
     charLayout = null;
     onScrollOrResize();
   });

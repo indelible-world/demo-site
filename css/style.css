@@ -217,9 +217,9 @@ html, body {
    Scroll budget (see the vh() thresholds in js/main.js — keep in sync).
    Beat 4 runs FIRST here: the article's letters scatter into the hash and then
    fly home, and the quotes only arrive once it has reassembled.
-     0    - 12vh    hold (article alone on the left, as published)
-     12   - 30vh    beat 4: hash panel fades in on the right
-     30   - 48vh    hold (pause before the letters start leaving)
+     (beat 4's hash panel isn't animated in at all — it sits in its column and
+      scrolls in with the article, same as the article's own placement)
+     0    - 48vh    hold (article and hash panel in place, as published)
      48   - 156vh   beat 4: article letters fly across and jumble into the hash
                     (each letter's own flight lasts LETTER_FLIGHT_VH of this)
      156  - 186vh   beat 4: "nothing is stored" note fades in
@@ -490,12 +490,13 @@ html, body {
 }
 
 /* Beat 4: shares the quotes column's grid cell like the two columns above, so
-   the hash lands where the quotes and verified/invalid cards stood. */
+   the hash sits where the quotes and verified/invalid cards later stand. Unlike
+   those two it has no resting offset — it's in place from the start and simply
+   scrolls in with the article. */
 .hash-column {
   grid-column: 2;
   grid-row: 1;
   position: relative;
-  opacity: 0;
 }
 
 /* Positioned absolutely with `top` set in js/main.js so it centers on the same

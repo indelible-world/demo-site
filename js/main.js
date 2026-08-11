@@ -489,12 +489,12 @@
     const scrollable = splitSpacer.offsetHeight - splitStage.offsetHeight;
     const scrolledPx = clamp(-rect.top, 0, Math.max(scrollable, 1));
 
-    // Beat 4 (first): the article arrives unannotated, alone on the left, and
-    // the hash panel fades in beside it. The quotes are held back until the
-    // letters have flown out and come home again.
-    const hashInT = clamp((scrolledPx - vh(12)) / (vh(30) - vh(12)), 0, 1);
+    // Beat 4 (first): the hash panel is simply part of the stage, sitting in its
+    // column from the start, so it scrolls in with the article rather than
+    // animating in on its own. Its only move is dissolving out for beat 2, once
+    // the letters have flown out and faded home again.
     const hashOutT = clamp((scrolledPx - vh(348)) / (vh(366) - vh(348)), 0, 1);
-    hashColumn.style.opacity = String(hashInT * (1 - hashOutT));
+    hashColumn.style.opacity = String(1 - hashOutT);
 
     updateCharFlight(scrolledPx);
 

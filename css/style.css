@@ -243,12 +243,16 @@ html, body {
      420  - 436vh   beat 3: lead-in line dissolves out (cross dissolve, not a slide)
      420  - 472vh   beat 3: verified/invalid column slides in from the right,
                     overlapping the lead-in line's dissolve above
-     472  - 700vh   hold, then release into normal scroll */
+     550  - 580vh   hold (pause before beat 5 clears the stage)
+     580  - 598vh   beat 5: beat 3's two blocks slide out left and right
+     594  - 616vh   beat 5: the $0 crashes into the space they vacated,
+                    overlapping the tail of their exit above
+     616  - 820vh   hold, then release into normal scroll */
 .split-spacer {
   position: relative;
   z-index: 1;
   background: var(--paper);
-  height: 800vh;
+  height: 920vh;
   margin-top: -48vh;
 }
 
@@ -296,7 +300,8 @@ html, body {
   .article-clip,
   .quotes,
   .reveal-column,
-  .hash-column {
+  .hash-column,
+  .price-column {
     grid-column: 1;
     grid-row: auto;
   }
@@ -530,6 +535,46 @@ html, body {
   color: var(--ink);
   overflow-wrap: anywhere;
   word-break: break-all;
+}
+
+/* Beat 5: spans the full grid rather than sharing the quotes column, so the
+   $0 lands centered in the gap left by beat 3's two blocks clearing off to
+   either side. Scale/opacity are driven from js/main.js. */
+.price-column {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  position: relative;
+  pointer-events: none;
+}
+
+/* Positioned absolutely with `top` set in js/main.js, centered on the same
+   vertical span the quote cards occupied — same approach as .filler-card. */
+.price-block {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.price-amount {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: clamp(5rem, 16vw, 13rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: hsl(var(--accent-green));
+}
+
+.price-caption {
+  margin: 1.4rem 0 0;
+  font-family: var(--sans);
+  font-size: clamp(1.1rem, 2.4vw, 1.9rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
 }
 
 /* Each digit starts blank and is filled in as a letter lands on it. */

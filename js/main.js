@@ -85,6 +85,9 @@
     });
   }
 
+  document.getElementById("price-amount").textContent = cfg.beat5.amount;
+  document.getElementById("price-caption").textContent = cfg.beat5.caption;
+
   // Beat 4: the hash is built one <span> per hex digit, because each digit is
   // a landing slot the article's letters are aimed at individually.
   const hashPanel = document.getElementById("hash-panel");
@@ -214,6 +217,7 @@
   const revealColumn = document.querySelector(".reveal-column");
   const fillerUpperEl = document.getElementById("filler-upper");
   const fillerLowerEl = document.getElementById("filler-lower");
+  const priceBlockEl = document.getElementById("price-block");
   const markEls = document.querySelectorAll("mark.flag");
   const MARK_MAX_ALPHA = { "flag-verified": 0.28, "flag-altered": 0.4 };
   const MARK_COLOR_VAR = { "flag-verified": "--accent-green", "flag-altered": "--accent-red" };
@@ -250,6 +254,9 @@
     // either one individually — it reads as one line, not paired with either.
     centerOn(leadTextEl, quotesEl, quotesTop);
     centerOn(hashPanel, quotesEl, quotesTop);
+    // Beat 5 spans both columns, but still centers on the quote cards' span so
+    // the $0 lands on the same eye line everything else has held.
+    centerOn(priceBlockEl, quotesEl, quotesTop);
   }
 
   // ---------- Beat 4: article letters fly into the hash ----------
@@ -526,7 +533,7 @@
 
     const slideT = clamp((scrolledPx - vh(356)) / (vh(368) - vh(356)), 0, 1);
     quotesEl.style.opacity = String(quotesInT);
-    quotesEl.style.transform = `translateX(${quotesShiftX() * slideT}px)`;
+
 
     // Beat 3: lead-in line slides in from the right, holds, then exits via a
     // cross dissolve (opacity only, no reverse slide) rather than sliding
@@ -542,7 +549,24 @@
     // shift so its box-shadow's blur radius doesn't creep into .split-grid's
     // clipped (overflow-x: hidden) area while off-screen.
     const enterT = clamp((scrolledPx - vh(420)) / (vh(472) - vh(420)), 0, 1);
-    revealColumn.style.transform = `translateX(${(1 - enterT) * 140}%)`;
+
+    // Beat 5: beat 3's two blocks clear the stage in opposite directions —
+    // the quotes (already parked in the article's column) continue off left,
+    // the verified/invalid column retreats off right the way it came in.
+    const clearT = easeInOut(clamp((scrolledPx - vh(580)) / (vh(598) - vh(580)), 0, 1));
+    const quotesX = quotesShiftX() * slideT - clearT * splitGrid.getBoundingClientRect().width;
+    quotesEl.style.transform = `translateX(${quotesX}px)`;
+    revealColumn.style.transform = `translateX(${((1 - enterT) + clearT) * 140}%)`;
+
+    // Beat 5: drops in oversized and slams down to full size, so it reads as an
+    // impact rather than a fade — hence ease-out only, no symmetric ease. Scale
+    // overshoot stays modest because .split-grid clips the x axis; the drop
+    // carries the weight instead, since the y axis is unclipped.
+    const crashT = clamp((scrolledPx - vh(580)) / (vh(616) - vh(580)), 0, 1);
+    const crashE = 1 - Math.pow(1 - crashT, 3);
+    priceBlockEl.style.opacity = String(clamp(crashT / 0.3, 0, 1));
+    priceBlockEl.style.transform =
+      `translateY(${(1 - crashE) * -26}vh) scale(${1.55 - 0.55 * crashE})`;
 
     positionFillerCards();
   }

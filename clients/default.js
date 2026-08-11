@@ -99,6 +99,6 @@ window.SITE_CONFIG = {
   // crashes into the empty space they leave behind.
   beat5: {
     amount: "$0",
-    caption: "Free Certifications & Verifications"
+    caption: "Free Verifications Forever & Free Certifications for Pilot Partners"
   }
 };

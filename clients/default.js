@@ -12,7 +12,7 @@ window.SITE_CONFIG = {
     logo: "Indelible",
     eyebrow: "Blockchain-verified provenance",
     heading: "Restoring trust in news and information.",
-    subtext: "indelible.world is building a protocol for establishing verifiable, on-chain authorship of digital content, without relying on any centralized platform, server, or authority.",
+    subtext: "indelible.world built a protocol for establishing verifiable, on-chain authorship of digital content, without relying on any centralized platform, server, or authority.",
     features: [
       {
         icon: "⏱️",

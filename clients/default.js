@@ -71,16 +71,16 @@ window.SITE_CONFIG = {
   beat3: {
     // Larger lead-in line that slides in first, holds, then slides back out
     // before the verified/invalid blocks take its place.
-    leadText: "Each quote is checked against an immutable fingerprint of the original published text...",
+    leadText: "Quotes can be checked against an immutable fingerprint of the original published text...",
     // upperText/lowerText take either a single string or an array of strings —
     // an array renders as separate paragraphs within the same card.
     upperLabel: "VERIFIED",
     upperText: [
-      "Published by 0xD2f2c95962632B4742703CC058889c624380C748 at 6/22/2026, 8:38:00 PM.",
-      "ENS: nytimes.eth, indelibleworld.eth, test25.eth"
+      '"Published by 0xD2f2c95962632B4742703CC058889c624380C748 at 6/22/2026, 8:38:00 PM.',
+      'ENS: nytimes.eth, indelibleworld.eth, test25.eth"'
     ],
     lowerLabel: "INVALID",
-    lowerText: "    The Merkle proof could not be verified against the on-chain attestation."
+    lowerText: '"The Merkle proof could not be verified against the on-chain attestation."'
   },
 
   // Beat 4: the article returns on the left, then every letter of it flies
@@ -92,24 +92,24 @@ window.SITE_CONFIG = {
     // Must be a plain hex string — each character becomes one landing slot for
     // the article's letters, so its length sets how the hash fills in.
     hash: "bafyrei3f8a1c05d7b26e94af0c5183be27d4f6a9152c7e0db438f1c6a2e59d70b4183c",
-    note: "This fingerprint is all that is stored. The article text cannot be reconstructed from it, only checked against it."
+    note: "We publish the article's fingerprint (and fingerprint only) to a public, timestamped blockchain. The article text cannot be reconstructed from it, only checked against it."
   },
 
   // Beat 3.5: beat 3's two blocks clear off to the left and right, and these
   // three pillars rise into the space they leave, hold, then clear out for
   // beat 5. Three items are assumed by the layout (a 3-up grid).
   ownership: {
-    heading: "Every article stays entirely yours.",
+    heading: "Every article stays in your control.",
     items: [
       {
         icon: "🔑",
         title: "Keys",
-        body: "Root signing keys never leave the newsroom. You only delegate access to a secure Indelible key which can be revoked at any time.."
+        body: "Root signing keys never leave the newsroom. You only delegate access to a secure Indelible key which can be revoked at any time."
       },
       {
         icon: "🎛️",
         title: "Control",
-        body: "You can completely revoke our key's ability to sign articles on your behalf at any time, and you have seven days to revoke any erroneous attestations. We only certify articles on your (API) request."
+        body: "You can completely revoke our key's ability to sign articles on your behalf at any time, and you have seven days to revoke any erroneous attestations. We never certify articles without your permission."
       },
       {
         icon: "©",

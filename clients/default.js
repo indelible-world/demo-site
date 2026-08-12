@@ -124,6 +124,7 @@ window.SITE_CONFIG = {
   // Beat 5: after the pillars above clear, this crashes into the empty space.
   beat5: {
     amount: "$0",
-    caption: "Free Verifications Forever & Free Certifications for Pilot Partners"
+    caption: "Free Verifications Forever & Free Certifications for Pilot Partners",
+    footnote: "AI-powered misinformation is a growing problem that Indelible is building the solution to. Let's solve it today."
   }
 };

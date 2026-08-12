@@ -102,6 +102,7 @@
 
   document.getElementById("price-amount").textContent = cfg.beat5.amount;
   document.getElementById("price-caption").textContent = cfg.beat5.caption;
+  document.getElementById("price-footnote").textContent = cfg.beat5.footnote || "";
 
   // Beat 4: the hash is built one <span> per hex digit, because each digit is
   // a landing slot the article's letters are aimed at individually.

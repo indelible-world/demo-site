@@ -316,8 +316,10 @@ html, body {
   align-items: start;
   /* .reveal-column rests off to the right (see below) until beat 3 slides it
      in; clip that here rather than on an ancestor of .split-stage, which
-     would silently break its position: sticky (bit us once already). */
-  overflow-x: hidden;
+     would silently break its position: sticky (bit us once already).
+     `clip`, not `hidden`: `hidden` on one axis computes the other to `auto`,
+     which made beat 4's flying letters raise a vertical scrollbar here. */
+  overflow-x: clip;
 }
 
 /* Explicit placement for all three, not just .reveal-column: explicit-position

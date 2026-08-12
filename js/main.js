@@ -11,6 +11,8 @@
   document.getElementById("intro-eyebrow").textContent = cfg.intro.eyebrow;
   document.getElementById("intro-heading").textContent = cfg.intro.heading;
   document.getElementById("intro-subtext").textContent = cfg.intro.subtext;
+  document.getElementById("intro-scroll-cue-text").textContent =
+    cfg.intro.scrollCue || "Scroll down to see how";
 
   const introFeaturesEl = document.getElementById("intro-features");
   (cfg.intro.features || []).forEach((f) => {

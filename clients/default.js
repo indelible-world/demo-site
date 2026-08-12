@@ -13,6 +13,8 @@ window.SITE_CONFIG = {
     eyebrow: "Blockchain-verified provenance",
     heading: "Restoring trust in news and information.",
     subtext: "indelible.world built a protocol for establishing verifiable, on-chain authorship of digital content, without relying on any centralized platform, server, or authority.",
+    // Prompt in the top-right corner, fades in a beat after the page loads.
+    scrollCue: "Scroll down to see how",
     features: [
       {
         icon: "⏱️",

@@ -20,6 +20,12 @@
   <section class="intro-spacer">
     <div class="intro-stage">
       <div id="intro-logo" class="intro-logo"></div>
+      <!-- Fades itself in a beat after load (CSS animation-delay) so it reads
+           as a prompt to a visitor who has stopped, not part of the slide. -->
+      <div id="intro-scroll-cue" class="intro-scroll-cue">
+        <span id="intro-scroll-cue-text"></span>
+        <span class="intro-scroll-cue-arrow" aria-hidden="true">↓</span>
+      </div>
       <div class="intro-content">
         <p id="intro-eyebrow" class="intro-eyebrow"></p>
         <h1 id="intro-heading" class="intro-heading"></h1>

@@ -55,6 +55,44 @@ html, body {
   letter-spacing: -0.01em;
 }
 
+/* Mirrors .intro-logo across the top of the stage. Fades out with the rest
+   of the intro, since .intro-stage's opacity carries it. */
+.intro-scroll-cue {
+  position: absolute;
+  top: 5vh;
+  right: 6vw;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #666;
+  opacity: 0;
+  animation: cue-fade-in 1s ease 1.8s forwards;
+}
+
+.intro-scroll-cue-arrow {
+  font-size: 2.8rem;
+  line-height: 1;
+  color: #4c2f6a;
+  animation: cue-bob 1.8s ease-in-out infinite;
+}
+
+@keyframes cue-fade-in {
+  to { opacity: 1; }
+}
+
+@keyframes cue-bob {
+  0%, 100% { transform: translateY(-2px); }
+  50% { transform: translateY(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-scroll-cue-arrow { animation: none; }
+}
+
 .intro-content {
   max-width: 760px;
   text-align: center;

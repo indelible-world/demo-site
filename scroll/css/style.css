@@ -336,26 +336,6 @@ html, body {
   grid-row: 1;
 }
 
-@media (max-width: 820px) {
-  .split-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .article-clip,
-  .quotes,
-  .reveal-column,
-  .hash-column,
-  .ownership-column,
-  .price-column {
-    grid-column: 1;
-    grid-row: auto;
-  }
-
-  .ownership-items {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* Left: torn article screenshot */
 
 .article-clip {
@@ -762,3 +742,173 @@ mark.flag {
 }
 
 a { color: inherit; } 
+
+/* ---------- Narrow screens ---------- */
+
+/* Section 2 deliberately keeps its two-column grid here rather than stacking.
+   Collapsing to one column breaks every beat at once: the four columns that
+   share grid cell `2 / 1` (.quotes, .lead-column, .reveal-column,
+   .hash-column) stop overlapping and stack into a tower instead of landing on
+   the same spot, quotesShiftX() computes a slide into a column that no longer
+   exists, and .split-stage grows far taller than the viewport — so the sticky
+   pin never actually holds the storyboard still, which is the whole mechanic.
+   Instead of reflowing, scale the copy down until the stage fits the viewport.
+   Must stay last in the file: these override same-specificity rules above. */
+@media (max-width: 820px) {
+  .split {
+    padding: 4vh 4vw;
+  }
+
+  .split-grid {
+    gap: 4vw;
+  }
+
+  .article-card {
+    padding: 0.8rem 1rem 1.1rem;
+  }
+
+  .article-header-img {
+    margin-bottom: 1rem;
+  }
+
+  .article-body p {
+    font-size: 0.55rem;
+    line-height: 1.55;
+    margin-bottom: 0.8rem;
+  }
+
+  .quotes {
+    gap: 1.6rem;
+  }
+
+  .quote-card,
+  .filler-card,
+  .hash-panel {
+    padding: 1rem 1.1rem;
+  }
+
+  .quote-card blockquote {
+    font-size: 0.78rem;
+  }
+
+  .quote-card cite {
+    font-size: 0.6rem;
+  }
+
+  .quote-badge {
+    font-size: 0.55rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .filler-card p {
+    font-size: 0.6rem;
+  }
+
+  .hash-value {
+    font-size: 0.62rem;
+  }
+
+  .hash-note {
+    font-size: 0.58rem;
+  }
+
+  .lead-text p {
+    font-size: 1rem;
+  }
+
+  /* Stays a 3-up for the same reason the grid does — stacking the pillars
+     pushes .split-stage past the viewport and unpins the stage. */
+  .ownership-items {
+    gap: 1rem;
+  }
+
+  .ownership-heading {
+    margin-bottom: 1.6rem;
+  }
+
+  .ownership-item {
+    padding-top: 0.7rem;
+  }
+
+  .ownership-item-icon {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .ownership-item h3 {
+    font-size: 0.8rem;
+  }
+
+  .ownership-item p {
+    font-size: 0.6rem;
+  }
+
+  /* Wraps here — as one line it runs past .split-grid's clipped edge. */
+  .price-footnote {
+    white-space: normal;
+  }
+}
+
+/* Small phones: the tier above still leaves .split-stage taller than a 320x568
+   viewport, so step the same scale down again. */
+@media (max-width: 400px) {
+  .article-card {
+    padding: 0.6rem 0.7rem 0.8rem;
+  }
+
+  .article-header-img {
+    margin-bottom: 0.7rem;
+  }
+
+  .article-body p {
+    font-size: 0.44rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .quotes {
+    gap: 1.1rem;
+  }
+
+  .quote-card,
+  .filler-card,
+  .hash-panel {
+    padding: 0.7rem 0.8rem;
+  }
+
+  .quote-card blockquote {
+    font-size: 0.62rem;
+  }
+
+  .quote-card cite {
+    font-size: 0.5rem;
+  }
+
+  .quote-badge {
+    font-size: 0.46rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .filler-card p {
+    font-size: 0.5rem;
+  }
+
+  .hash-value {
+    font-size: 0.5rem;
+  }
+
+  .hash-note {
+    font-size: 0.5rem;
+  }
+
+  .lead-text p {
+    font-size: 0.8rem;
+  }
+
+  .ownership-item h3 {
+    font-size: 0.68rem;
+  }
+
+  .ownership-item p {
+    font-size: 0.5rem;
+  }
+}

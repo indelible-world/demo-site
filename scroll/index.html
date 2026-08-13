@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Newsroom Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Loaded non-blocking: as a render-blocking stylesheet this stalls the
+       whole document (and main.js with it) when the network is unavailable. -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Section 0: intro slide (logo, mission statement, three feature blurbs).
+       Pins, holds, then fades out the same way the front page does into the
+       split section — see .intro-stage fade timing in js/main.js. -->
+  <section class="intro-spacer">
+    <div class="intro-stage">
+      <div id="intro-logo" class="intro-logo"></div>
+      <!-- Fades itself in a beat after load (CSS animation-delay) so it reads
+           as a prompt to a visitor who has stopped, not part of the slide. -->
+      <div id="intro-scroll-cue" class="intro-scroll-cue">
+        <span id="intro-scroll-cue-text"></span>
+        <span class="intro-scroll-cue-arrow" aria-hidden="true">↓</span>
+      </div>
+      <div class="intro-content">
+        <p id="intro-eyebrow" class="intro-eyebrow"></p>
+        <h1 id="intro-heading" class="intro-heading"></h1>
+        <p id="intro-subtext" class="intro-subtext"></p>
+      </div>
+      <div id="intro-features" class="intro-features"></div>
+    </div>
+  </section>
+
+  <!-- Section 1: full-screen front page, highlight draws itself in on scroll -->
+  <section class="hero-spacer">
+    <div class="hero-stage">
+      <div class="hero-frame">
+        <img id="front-page-img" alt="" />
+        <div id="hero-highlight-box" class="hero-highlight"></div>
+      </div>
+      <div class="hero-caption">Scroll to continue</div>
+    </div>
+  </section>
+
+  <!-- Section 2: two column split. Pins at the top of the viewport and holds
+       there (rather than scrolling off) while the highlight marks fade in. -->
+  <section class="split-spacer">
+    <div class="split-stage">
+      <div class="split">
+        <div class="split-grid">
+          <div class="article-clip">
+            <div class="article-card">
+              <img id="article-header-img" class="article-header-img" alt="" />
+              <div id="article-body" class="article-body"></div>
+            </div>
+          </div>
+
+          <div class="quotes">
+            <article id="quote-accurate" class="quote-card verified">
+              <span class="quote-badge"></span>
+              <blockquote></blockquote>
+              <cite></cite>
+            </article>
+
+            <article id="quote-inaccurate" class="quote-card altered">
+              <span class="quote-badge"></span>
+              <blockquote></blockquote>
+              <cite></cite>
+            </article>
+          </div>
+
+          <!-- Beat 3: larger lead-in line, slides in from the right first,
+               holds, then slides back out before .reveal-column takes over. -->
+          <div class="lead-column">
+            <div id="lead-text" class="lead-text">
+              <p></p>
+            </div>
+          </div>
+
+          <!-- Beat 3: slides in from the right to where .quotes rests, once
+               .quotes has slid left into the article column's place. -->
+          <div class="reveal-column">
+            <div id="filler-upper" class="filler-card verified">
+              <span class="quote-badge"></span>
+              <p></p>
+            </div>
+            <div id="filler-lower" class="filler-card altered">
+              <span class="quote-badge"></span>
+              <p></p>
+            </div>
+          </div>
+
+          <!-- Beat 4: the article comes back on the left exactly as it was,
+               then its letters fly individually into this hash and jumble. -->
+          <div class="hash-column">
+            <div id="hash-panel" class="hash-panel">
+              <span class="quote-badge"></span>
+              <div id="hash-value" class="hash-value"></div>
+              <p id="hash-note" class="hash-note"></p>
+            </div>
+          </div>
+
+          <!-- Beat 3.5: spans both columns, in the space beat 3's two blocks
+               vacate as they slide off left and right; clears out again for
+               beat 5's $0. -->
+          <div class="ownership-column">
+            <div id="ownership-block" class="ownership-block">
+              <h2 id="ownership-heading" class="ownership-heading"></h2>
+              <div id="ownership-items" class="ownership-items"></div>
+            </div>
+          </div>
+
+          <!-- Beat 5: spans both columns, so it lands centered in the space
+               beat 3.5's pillars vacate as they fade back out. -->
+          <div class="price-column">
+            <div id="price-block" class="price-block">
+              <p id="price-amount" class="price-amount"></p>
+              <p id="price-caption" class="price-caption"></p>
+              <p id="price-footnote" class="price-footnote"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="more"><a href="https://indelible.world">indelible.world</a> - <a href="https://docs.indelible.world/tryit">Demo</a></p>
+
+  <script src="clients/default.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

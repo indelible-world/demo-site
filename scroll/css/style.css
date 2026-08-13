@@ -1,0 +1,764 @@
+:root {
+  --ink: #111;
+  --paper: #ffffff;
+  --accent-red: 0, 90%, 60%;
+  --accent-yellow: 50, 96%, 55%;
+  --accent-green: 152, 55%, 32%;
+  --accent-blue: 231, 84%, 60%;
+  --serif: Georgia, "Times New Roman", Times, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --inter: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+}
+
+/* ---------- Section 0: Intro ---------- */
+
+/* Same pin/hold/fade mechanic as .hero-spacer below, and pulled up under the
+   intro's fade-out the same way .split-spacer is pulled up under this one's
+   — see js/main.js's updateIntroProgress for the timing this pairs with. */
+.intro-spacer {
+  position: relative;
+  z-index: 3;
+  height: 220vh;
+}
+
+.intro-stage {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper);
+  padding: 10vh 6vw;
+  will-change: opacity;
+}
+
+.intro-logo {
+  position: absolute;
+  top: 5vh;
+  left: 6vw;
+  font-family: var(--sans);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Mirrors .intro-logo across the top of the stage. Fades out with the rest
+   of the intro, since .intro-stage's opacity carries it. */
+.intro-scroll-cue {
+  position: absolute;
+  top: 5vh;
+  right: 6vw;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #666;
+  opacity: 0;
+  animation: cue-fade-in 1s ease 1.8s forwards;
+}
+
+.intro-scroll-cue-arrow {
+  font-size: 2.8rem;
+  line-height: 1;
+  color: #4c2f6a;
+  animation: cue-bob 1.8s ease-in-out infinite;
+}
+
+@keyframes cue-fade-in {
+  to { opacity: 1; }
+}
+
+@keyframes cue-bob {
+  0%, 100% { transform: translateY(-2px); }
+  50% { transform: translateY(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-scroll-cue-arrow { animation: none; }
+}
+
+.intro-content {
+  max-width: 760px;
+  text-align: center;
+}
+
+.intro-eyebrow {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: hsl(var(--accent-blue));
+  background: hsla(var(--accent-blue), 0.12);
+  padding: 0.5em 1.1em;
+  border-radius: 999px;
+  margin: 0 0 2rem;
+}
+
+.intro-heading {
+  font-family: var(--sans);
+  font-size: clamp(2.2rem, 5.5vw, 4.2rem);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.6rem;
+}
+
+.intro-subtext {
+  font-family: var(--sans);
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  line-height: 1.6;
+  color: #555;
+  margin: 0;
+}
+
+.intro-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+  max-width: 1000px;
+  margin-top: 7vh;
+}
+
+.intro-feature {
+  font-family: var(--sans);
+  text-align: left;
+}
+
+.intro-feature-icon {
+  width: 2.4rem;
+  height: 2.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f1f4;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.intro-feature h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.intro-feature p {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: #666;
+  margin: 0;
+}
+
+@media (max-width: 820px) {
+  .intro-features {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Section 1: Hero front page ---------- */
+
+/* Pulled up under the intro's fade-out (see .intro-stage timing in
+   js/main.js), same pattern .split-spacer uses on this section.
+   Scroll budget (see the vh() thresholds in js/main.js's updateHeroProgress
+   — keep in sync); .hero-stage is a fixed 100vh, so this scrollable range
+   (height minus 100vh) is always exactly 135vh:
+     0   - 24vh   hold
+     24  - 54vh   highlighter fades in over the article
+     54  - 87vh   hold (pause so the highlight registers before it fades)
+     87  - 135vh  front page fades out, then releases into normal scroll */
+.hero-spacer {
+  position: relative;
+  z-index: 2;
+  height: 235vh;
+  margin-top: -48vh;
+}
+
+.hero-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--paper);
+  will-change: opacity;
+}
+
+/* Sized in %, not vw/vh: percentages resolve against .hero-stage's actual
+   rendered box (scrollbar already subtracted), so this frame's measured
+   rect in js/main.js always exactly equals the image's own rendered box —
+   vw/vh would instead measure the full layout viewport including whatever
+   width a scrollbar occupies, which can silently disagree with the % chain
+   and throw off the highlight's alignment. */
+.hero-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.hero-highlight {
+  position: absolute;
+  background: hsla(var(--accent-yellow), 0.45);
+  mix-blend-mode: multiply;
+  border-radius: 6px;
+  transform: rotate(-0.4deg);
+  box-shadow: 0 0 0 2px hsla(var(--accent-yellow), 0.3);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.hero-caption {
+  position: absolute;
+  bottom: 6vh;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--ink);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.45;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ---------- Section 2: Two column split ---------- */
+
+/* Pulled up under the hero's fade-out (see .hero-highlight timing in js/main.js),
+   then pins at the top of the viewport and holds there while later beats play
+   out, instead of scrolling past like a plain in-flow section would.
+   Scroll budget (see the vh() thresholds in js/main.js — keep in sync).
+   Beat 4 runs FIRST here: the article's letters scatter into the hash and then
+   fly home, and the quotes only arrive once it has reassembled.
+     (beat 4's hash panel isn't animated in at all — it sits in its column and
+      scrolls in with the article, same as the article's own placement)
+     0    - 48vh    hold (article and hash panel in place, as published)
+     48   - 156vh   beat 4: article letters fly across and jumble into the hash
+                    (each letter's own flight lasts LETTER_FLIGHT_VH of this)
+     156  - 186vh   beat 4: "nothing is stored" note fades in (and stays up —
+                    it leaves with the panel, not on its own)
+     186  - 240vh   hold (empty article beside the resolved hash)
+     240  - 285vh   beat 4: letters fade back in at home (no reverse flight),
+                    top down in the order they left; the hash stays resolved.
+                    Much shorter than the outbound flight — the text snaps back
+                    rather than trickling in.
+     270  - 288vh   beat 2: hash panel dissolves out (taking the hash text and
+                    note with it) as the quotes fade in, overlapping the tail of
+                    the return above so the article refills as the cards arrive
+     288  - 302vh   hold
+     302  - 316vh   beat 2: quote/article marks fade in
+     316  - 346vh   hold (pause so the Carolina marks register before beat 3)
+     346  - 356vh   beat 3: article fades out (finishes before the slide starts)
+     356  - 368vh   beat 3: quotes slide left
+     368  - 386vh   hold (pause before the lead-in line enters)
+     386  - 404vh   beat 3: lead-in line slides in from the right
+     404  - 420vh   hold (lead-in line stays put)
+     420  - 436vh   beat 3: lead-in line dissolves out (cross dissolve, not a slide)
+     420  - 458vh   beat 3: verified/invalid column slides in from the right,
+                    overlapping the lead-in line's dissolve above
+     458  - 500vh   hold (pause before beat 3.5 clears the stage)
+     500  - 518vh   beat 3.5: beat 3's two blocks slide out left and right
+     514  - 542vh   beat 3.5: keys/control/rights pillars rise into the space
+                    they vacated, staggered, overlapping the tail of that exit
+     542  - 620vh   hold (pillars stay up to be read)
+     620  - 638vh   beat 3.5: pillars lift away and dissolve out
+     632  - 668vh   beat 5: the $0 crashes into the space they vacated,
+                    overlapping the tail of the pillars' exit above
+     668  - 872vh   hold, then release into normal scroll */
+.split-spacer {
+  position: relative;
+  z-index: 1;
+  background: var(--paper);
+  height: 972vh;
+  margin-top: -48vh;
+}
+
+.split-stage {
+  position: sticky;
+  top: 0;
+}
+
+.split {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8vh 6vw;
+}
+
+.split-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 5vw;
+  align-items: start;
+  /* .reveal-column rests off to the right (see below) until beat 3 slides it
+     in; clip that here rather than on an ancestor of .split-stage, which
+     would silently break its position: sticky (bit us once already).
+     `clip`, not `hidden`: `hidden` on one axis computes the other to `auto`,
+     which made beat 4's flying letters raise a vertical scrollbar here. */
+  overflow-x: clip;
+}
+
+/* Explicit placement for all three, not just .reveal-column: explicit-position
+   items are placed before auto-flow runs, so if only .reveal-column claimed
+   column 2 here, it would claim that cell first and push .quotes into row 2
+   instead of beside .article-clip. */
+.article-clip {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.quotes {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+@media (max-width: 820px) {
+  .split-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .article-clip,
+  .quotes,
+  .reveal-column,
+  .hash-column,
+  .ownership-column,
+  .price-column {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .ownership-items {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Left: torn article screenshot */
+
+.article-clip {
+  position: relative;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.article-clip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.article-card {
+  background: #fff;
+  /* Slimmer on top: the card is white-on-white, so top padding reads as a
+     dead gap above the headline rather than as part of the card. */
+  padding: 1.2rem 2.2rem 2.4rem;
+  border-radius: .4rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-color: #111;
+  border: #111;
+  border-style: dashed;
+  border-width: 1px;
+  margin-top: 0rem;
+}
+
+.article-header-img {
+  display: block;
+  width: 100%;
+  margin-bottom: 1.6rem;
+}
+
+.article-body p {
+  font-size: .85rem;
+  line-height: 1.65;
+  margin: 0 0 1.2rem;
+}
+
+/* Right: quote cards */
+
+/* Held invisible through beat 4 (it still occupies its grid cell, which is what
+   the hash panel is centered against) until js/main.js fades it in. */
+.quotes {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+  opacity: 0;
+}
+
+.quote-card {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+  padding: 1.6rem 1.8rem;
+  background: #fafafa;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.quote-card.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.quote-card:nth-of-type(2) {
+  transition-delay: 0.15s;
+}
+
+.quote-badge {
+  display: inline-block;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25em 0.7em;
+  border-radius: 999px;
+  margin-bottom: 0.9rem;
+}
+
+/* Shared verified/altered tone — applies to .quote-card and .filler-card
+   alike, so the beat 3 lorem ipsum blocks can carry the same badge style. */
+.quote-card.verified,
+.filler-card.verified {
+  border-left: 4px solid hsl(var(--accent-green));
+}
+
+.quote-card.verified .quote-badge,
+.filler-card.verified .quote-badge {
+  color: hsl(var(--accent-green));
+  background: hsla(var(--accent-green), 0.12);
+}
+
+.quote-card.altered,
+.filler-card.altered {
+  border-left: 4px solid hsl(var(--accent-red));
+}
+
+.quote-card.altered .quote-badge,
+.filler-card.altered .quote-badge {
+  color: hsl(var(--accent-red));
+  background: hsla(var(--accent-red), 0.12);
+}
+
+.quote-card blockquote {
+  margin: 0 0 0.7rem;
+  font-size: 1.15rem;
+  line-height: 1.55;
+  font-style: italic;
+}
+
+.quote-card blockquote::before {
+  content: "\201C";
+}
+
+.quote-card blockquote::after {
+  content: "\201D";
+}
+
+.quote-card cite {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.8rem;
+  color: #777;
+  font-style: normal;
+}
+
+/* Beat 3: also shares the quotes column's grid cell — slides in first, holds,
+   then slides back out before .reveal-column enters (see js/main.js timing). */
+.lead-column {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+  transform: translateX(100%);
+}
+
+/* Positioned absolutely with `top` set in js/main.js to center it on the
+   combined vertical span of the two quote cards. */
+.lead-text {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.lead-text p {
+  margin: 0;
+  font-size: 1.55rem;
+  line-height: 1.45;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* Beat 3: shares the quotes column's grid cell (stacked, not side by side) so
+   it lands exactly in that column's position once slid fully into view.
+   Rests at 140%, not 100%, so its box-shadow's blur radius clears
+   .split-grid's clipped edge instead of leaking into view — see the matching
+   140% in js/main.js's updateSplitProgress. */
+.reveal-column {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+  transform: translateX(140%);
+}
+
+/* Positioned absolutely with `top` set in js/main.js to match the verified/
+   altered quote cards' measured offsets — the two sets of copy are different
+   lengths, so equal gaps alone wouldn't keep their top edges aligned. */
+.filler-card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: 1.6rem 1.8rem;
+  background: #fafafa;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.filler-card p {
+  margin: 0 0 0.8rem;
+  font-family: var(--inter);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: #555;
+  /* Wallet addresses are one unbreakable token — let them wrap mid-string
+     rather than overflow the card. */
+  overflow-wrap: anywhere;
+}
+
+.filler-card p:last-child {
+  margin-bottom: 0;
+}
+
+/* Beat 4: shares the quotes column's grid cell like the two columns above, so
+   the hash sits where the quotes and verified/invalid cards later stand. Unlike
+   those two it has no resting offset — it's in place from the start and simply
+   scrolls in with the article. */
+.hash-column {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+}
+
+/* Positioned absolutely with `top` set in js/main.js so it centers on the same
+   vertical span the quote cards occupied, matching .filler-card's approach. */
+.hash-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: 1.6rem 1.8rem;
+  background: #fafafa;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid hsl(var(--accent-blue));
+}
+
+.hash-panel .quote-badge {
+  color: hsl(var(--accent-blue));
+  background: hsla(var(--accent-blue), 0.12);
+}
+
+/* Monospace and mid-token wrapping so every hex digit occupies a fixed, stable
+   slot — js/main.js measures those slots to aim each incoming letter at one. */
+.hash-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+/* Beat 3.5: spans the full grid like .price-column below, so the three pillars
+   fill the width beat 3's two blocks vacate. Opacity/transform from js/main.js. */
+.ownership-column {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  position: relative;
+  pointer-events: none;
+}
+
+/* Positioned absolutely with `top` set in js/main.js, centered on the same
+   vertical span the quote cards occupied — same approach as .filler-card. */
+.ownership-block {
+  position: absolute;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.ownership-heading {
+  margin: 0 0 3rem;
+  text-align: center;
+  font-family: var(--sans);
+  font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.ownership-items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.4rem;
+}
+
+/* Each pillar rises on its own stagger — js/main.js writes the transform and
+   opacity per item, so they arrive in sequence rather than as one block. */
+.ownership-item {
+  font-family: var(--sans);
+  text-align: left;
+  border-top: 3px solid hsl(var(--accent-blue));
+  padding-top: 1.1rem;
+}
+
+.ownership-item-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  margin-bottom: 0.9rem;
+}
+
+.ownership-item h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ownership-item p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: #555;
+}
+
+/* Beat 5: spans the full grid rather than sharing the quotes column, so the
+   $0 lands centered in the gap left by beat 3.5's pillars clearing out.
+   Scale/opacity are driven from js/main.js. */
+.price-column {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  position: relative;
+  pointer-events: none;
+}
+
+/* Positioned absolutely with `top` set in js/main.js, centered on the same
+   vertical span the quote cards occupied — same approach as .filler-card. */
+.price-block {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.price-amount {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: clamp(5rem, 16vw, 13rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: hsl(var(--accent-green));
+}
+
+.price-caption {
+  margin: 1.4rem 0 0;
+  font-family: var(--sans);
+  font-size: clamp(1.1rem, 2.4vw, 1.9rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.price-footnote {
+  margin: 1.1rem 0 0;
+  font-family: var(--sans);
+  font-size: clamp(0.7rem, 1.15vw, 1rem);
+  font-weight: 400;
+  line-height: 1.55;
+  white-space: nowrap;
+  color: #888;
+}
+
+/* Each digit starts blank and is filled in as a letter lands on it. */
+.hash-digit {
+  opacity: 0.12;
+}
+
+.hash-digit.is-filled {
+  opacity: 1;
+}
+
+.hash-note {
+  margin: 1.1rem 0 0;
+  font-family: var(--inter);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #666;
+  opacity: 0;
+}
+
+/* Beat 4: every character of the article is wrapped in one of these. Inline
+   and unstyled by default so the article's own line breaking is untouched
+   while it's simply being read; js/main.js only switches them to absolute
+   positioning (below) after measuring where each one already sits. */
+.char {
+  display: inline;
+}
+
+/* Paragraph heights are frozen inline by js/main.js before this class lands,
+   so pulling the chars out of flow doesn't collapse the article's box. */
+.article-body.is-flying {
+  position: relative;
+}
+
+.article-body.is-flying .char {
+  position: absolute;
+  display: inline-block;
+  white-space: pre;
+  will-change: transform, opacity;
+}
+
+/* Background color is set directly from scroll progress in js/main.js
+   (same continuous approach as .hero-highlight), not a CSS transition,
+   so it fades back out when scrolling up just as reliably as it fades in. */
+mark.flag {
+  background-color: transparent;
+  mix-blend-mode: multiply;
+  padding: 0 0.1em;
+  border-radius: 3px;
+}
+
+/* ---------- Continuation placeholder ---------- */
+
+.more {
+  max-width: 720px;
+  margin: 0 auto 20vh;
+  padding: 0 6vw;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #888;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+a { color: inherit; } 

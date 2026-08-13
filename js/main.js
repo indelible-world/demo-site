@@ -113,14 +113,11 @@
   hashNoteEl.textContent = cfg.beat4.note;
 
   const hashDigitEls = [];
-  (cfg.beat4.hashPrefix + cfg.beat4.hash).split("").forEach((ch, i) => {
+  cfg.beat4.hash.split("").forEach((ch) => {
     const span = document.createElement("span");
     span.className = "hash-digit";
     span.textContent = ch;
-    // The "0x" prefix isn't a slot — it's already part of the label, not
-    // something a letter resolves into, so show it filled from the start.
-    if (i < cfg.beat4.hashPrefix.length) span.classList.add("is-filled");
-    else hashDigitEls.push(span);
+    hashDigitEls.push(span);
     hashValueEl.appendChild(span);
   });
 

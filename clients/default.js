@@ -90,9 +90,8 @@ window.SITE_CONFIG = {
   // fingerprint is ever written to the chain.
   beat4: {
     hashLabel: "FINGERPRINT STORED ON-CHAIN",
-    hashPrefix: "0x",
-    // Must be a plain hex string — each character becomes one landing slot for
-    // the article's letters, so its length sets how the hash fills in.
+    // Each character becomes one landing slot for the article's letters, so its
+    // length sets how the hash fills in.
     hash: "bafyrei3f8a1c05d7b26e94af0c5183be27d4f6a9152c7e0db438f1c6a2e59d70b4183c",
     note: "We publish the article's fingerprint (and fingerprint only) to a public, timestamped blockchain. The article text cannot be reconstructed from it, only checked against it."
   },

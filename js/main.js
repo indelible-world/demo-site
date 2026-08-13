@@ -566,20 +566,20 @@
     // overlap rather than running back to back. Rests further right than a 100%
     // shift so its box-shadow's blur radius doesn't creep into .split-grid's
     // clipped (overflow-x: hidden) area while off-screen.
-    const enterT = clamp((scrolledPx - vh(420)) / (vh(472) - vh(420)), 0, 1);
+    const enterT = clamp((scrolledPx - vh(420)) / (vh(458) - vh(420)), 0, 1);
 
     // Beat 3.5: beat 3's two blocks clear the stage in opposite directions —
     // the quotes (already parked in the article's column) continue off left,
     // the verified/invalid column retreats off right the way it came in.
-    const clearT = easeInOut(clamp((scrolledPx - vh(580)) / (vh(598) - vh(580)), 0, 1));
+    const clearT = easeInOut(clamp((scrolledPx - vh(500)) / (vh(518) - vh(500)), 0, 1));
     const quotesX = quotesShiftX() * slideT - clearT * splitGrid.getBoundingClientRect().width;
     quotesEl.style.transform = `translateX(${quotesX}px)`;
     revealColumn.style.transform = `translateX(${((1 - enterT) + clearT) * 140}%)`;
 
     // Beat 3.5: the three pillars rise into the space just vacated, each on its
     // own stagger, hold, then lift away together so beat 5 can land there.
-    const ownIn = clamp((scrolledPx - vh(580)) / (vh(622) - vh(580)), 0, 1);
-    const ownOut = clamp((scrolledPx - vh(700)) / (vh(718) - vh(700)), 0, 1);
+    const ownIn = clamp((scrolledPx - vh(500)) / (vh(542) - vh(500)), 0, 1);
+    const ownOut = clamp((scrolledPx - vh(620)) / (vh(638) - vh(620)), 0, 1);
     ownershipBlockEl.style.opacity = String(clamp(ownIn / 0.25, 0, 1) * (1 - ownOut));
     const ownHeadE = 1 - Math.pow(1 - clamp(ownIn / 0.5, 0, 1), 3);
     ownershipBlockEl.style.transform = `translateY(${(1 - ownHeadE) * 5 - ownOut * 6}vh)`;
@@ -598,7 +598,7 @@
     // impact rather than a fade — hence ease-out only, no symmetric ease. Scale
     // overshoot stays modest because .split-grid clips the x axis; the drop
     // carries the weight instead, since the y axis is unclipped.
-    const crashT = clamp((scrolledPx - vh(712)) / (vh(748) - vh(712)), 0, 1);
+    const crashT = clamp((scrolledPx - vh(632)) / (vh(668) - vh(632)), 0, 1);
     const crashE = 1 - Math.pow(1 - crashT, 3);
     priceBlockEl.style.opacity = String(clamp(crashT / 0.3, 0, 1));
     priceBlockEl.style.transform =

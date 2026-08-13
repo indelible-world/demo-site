@@ -279,22 +279,22 @@ html, body {
      386  - 404vh   beat 3: lead-in line slides in from the right
      404  - 420vh   hold (lead-in line stays put)
      420  - 436vh   beat 3: lead-in line dissolves out (cross dissolve, not a slide)
-     420  - 472vh   beat 3: verified/invalid column slides in from the right,
+     420  - 458vh   beat 3: verified/invalid column slides in from the right,
                     overlapping the lead-in line's dissolve above
-     550  - 580vh   hold (pause before beat 3.5 clears the stage)
-     580  - 598vh   beat 3.5: beat 3's two blocks slide out left and right
-     594  - 622vh   beat 3.5: keys/control/rights pillars rise into the space
+     458  - 500vh   hold (pause before beat 3.5 clears the stage)
+     500  - 518vh   beat 3.5: beat 3's two blocks slide out left and right
+     514  - 542vh   beat 3.5: keys/control/rights pillars rise into the space
                     they vacated, staggered, overlapping the tail of that exit
-     622  - 700vh   hold (pillars stay up to be read)
-     700  - 718vh   beat 3.5: pillars lift away and dissolve out
-     712  - 748vh   beat 5: the $0 crashes into the space they vacated,
+     542  - 620vh   hold (pillars stay up to be read)
+     620  - 638vh   beat 3.5: pillars lift away and dissolve out
+     632  - 668vh   beat 5: the $0 crashes into the space they vacated,
                     overlapping the tail of the pillars' exit above
-     748  - 952vh   hold, then release into normal scroll */
+     668  - 872vh   hold, then release into normal scroll */
 .split-spacer {
   position: relative;
   z-index: 1;
   background: var(--paper);
-  height: 1052vh;
+  height: 972vh;
   margin-top: -48vh;
 }
 

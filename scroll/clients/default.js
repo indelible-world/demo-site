@@ -10,16 +10,16 @@ window.SITE_CONFIG = {
   // skipping the two CTA buttons; the three feature blurbs are kept).
   intro: {
     logo: "Indelible",
-    eyebrow: "Blockchain-verified provenance",
+    eyebrow: "Verified media provenance",
     heading: "Restoring trust in news and information.",
-    subtext: "indelible.world built a protocol for establishing verifiable, on-chain authorship of digital content, without relying on any centralized platform, server, or authority.",
+    subtext: "indelible.world built a protocol for establishing verifiable, timestamped authorship of digital content, without relying on any centralized platform, server, or authority.",
     // Prompt in the top-right corner, fades in a beat after the page loads.
     scrollCue: "Scroll down to see how",
     features: [
       {
         icon: "⏱️",
         title: "Article Timestamping",
-        body: "Fingerprints of articles are certified with blockchain-verified timestamps that cannot be altered or erased."
+        body: "Fingerprints of articles are certified with verified timestamps that cannot be altered or erased."
       },
       {
         icon: "👥",
@@ -58,14 +58,14 @@ window.SITE_CONFIG = {
     accurate: {
       label: "ORIGINAL",
       source: "As published",
-      text: "…Senators Thom Tillis of North Carolina and John Cornyn of Texas refused to support Mr. Blanche’s nomination unless he committed in writing to dropping a $1.8 billion fund…",
-      highlightPhrase: "North Carolina"
+      text: "…Senators Thom Tillis of North Carolina and John Cornyn of Texas refused to support Mr. Blanche’s nomination since he committed in writing to dropping a $1.8 billion fund…",
+      highlightPhrase: "refused to support"
     },
     inaccurate: {
       label: "ALTERED",
       source: "Circulating online",
-      text: "…Senators Thom Tillis of South Carolina and John Cornyn of Texas refused to support Mr. Blanche’s nomination unless he committed in writing to dropping a $1.8 billion fund…",
-      highlightPhrase: "South Carolina"
+      text: "…Senators Thom Tillis of North Carolina and John Cornyn of Texas elected to support Mr. Blanche’s nomination since he committed in writing to dropping a $1.8 billion fund…",
+      highlightPhrase: "elected to support"
     }
   },
 
@@ -78,22 +78,21 @@ window.SITE_CONFIG = {
     // an array renders as separate paragraphs within the same card.
     upperLabel: "VERIFIED",
     upperText: [
-      '"Published by 0xD2f2c95962632B4742703CC058889c624380C748 at 6/22/2026, 8:38:00 PM.',
-      'ENS: nytimes.eth, indelibleworld.eth, test25.eth"'
+      '"Published by nytimes.com at 6/22/2026, 8:38:00 PM."'
     ],
     lowerLabel: "INVALID",
-    lowerText: '"The Merkle proof could not be verified against the on-chain attestation."'
+    lowerText: '"The quote could not be verified against the attestation."'
   },
 
   // Beat 4: the article returns on the left, then every letter of it flies
   // across and scrambles into the fingerprint on the right — nothing but the
   // fingerprint is ever written to the chain.
   beat4: {
-    hashLabel: "FINGERPRINT STORED ON-CHAIN",
+    hashLabel: "STORED FINGERPRINT",
     // Each character becomes one landing slot for the article's letters, so its
     // length sets how the hash fills in.
     hash: "bafyrei3f8a1c05d7b26e94af0c5183be27d4f6a9152c7e0db438f1c6a2e59d70b4183c",
-    note: "We publish the article's fingerprint (and fingerprint only) to a public, timestamped blockchain. The article text cannot be reconstructed from it, only checked against it."
+    note: "We store the article's fingerprint (and fingerprint only) to a public, timestamped ledger. The article text cannot be reconstructed from it, only checked against it."
   },
 
   // Beat 3.5: beat 3's two blocks clear off to the left and right, and these
@@ -115,7 +114,7 @@ window.SITE_CONFIG = {
       {
         icon: "©",
         title: "Rights",
-        body: "Copyright and licensing stay with you. The on-chain record proves authorship & never transfers or shares ownership of the work. The full text of the article is never republished without your permission."
+        body: "Copyright and licensing stay with you. The record we store proves authorship but never transfers or shares ownership of the work. The full text of the article is never republished without your permission."
       }
     ]
   },

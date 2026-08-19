@@ -121,10 +121,68 @@
     hashValueEl.appendChild(span);
   });
 
+  // ---------- Scroll timeline helpers ----------
+  // A beat is a { start, end } window, in vh scrolled since its stage
+  // pinned. Each section below builds its own timeline out of beat()/hold()
+  // calls stated purely as lengths — and buffers/overlaps relative to
+  // whatever came before — never as hand-computed absolute thresholds. That
+  // means moving, resizing, or reordering a beat reflows every beat after it
+  // in that section automatically, with no other beat's numbers to touch.
+  function createTimeline() {
+    let cursor = 0;
+    return {
+      // Reserves `length` vh for a beat, then advances the cursor past it
+      // plus `buffer` vh of hold before whatever comes next. Pass `overlap`
+      // to have this beat start that many vh before the current cursor —
+      // i.e. run concurrently with the tail of the previous beat, or in
+      // parallel with a beat just added — instead of strictly after it.
+      beat(length, { buffer = 0, overlap = 0 } = {}) {
+        const start = cursor - overlap;
+        const end = start + length;
+        cursor = Math.max(cursor, end) + buffer;
+        return { start, end };
+      },
+      // Reserves a hold with no animated beat of its own.
+      hold(length) {
+        cursor += length;
+      },
+      // Total vh this timeline's stage needs to stay pinned for.
+      get total() {
+        return cursor;
+      }
+    };
+  }
+
+  // Progress (0-1) of `scrolledPx` through a beat's { start, end } window.
+  function beatT(scrolledPx, beat) {
+    return clamp((scrolledPx - vh(beat.start)) / (vh(beat.end - beat.start) || 1), 0, 1);
+  }
+
+  // Sets a spacer's height from its stage's own live (content-driven) height
+  // plus its timeline's scroll budget — the single source of truth for both
+  // is the timeline itself, so tuning a beat never means also editing CSS.
+  function sizeSpacer(spacer, stage, timeline) {
+    spacer.style.height = stage.offsetHeight + vh(timeline.total) + "px";
+  }
+
   // ---------- Intro fade-out ----------
 
   const introSpacer = document.querySelector(".intro-spacer");
   const introStage = document.querySelector(".intro-stage");
+
+  // .hero-spacer's margin-top in css/style.css pulls it up to overlap the
+  // tail of .intro-spacer by this much — kept as its own named constant
+  // (rather than a bare number below) since .intro-fade's length must stay
+  // >= this for the front page to already be visible for the entire window
+  // where it's pulled up underneath the intro.
+  const INTRO_HERO_OVERLAP_VH = 48;
+
+  // Fades from the very first pixel scrolled — no hold first — so the front
+  // page underneath starts revealing immediately instead of only after a
+  // long hold, and finishes revealing well before the old fade would even
+  // have started.
+  const introTimeline = createTimeline();
+  const introFade = introTimeline.beat(Math.max(70, INTRO_HERO_OVERLAP_VH));
 
   function updateIntroProgress() {
     const rect = introSpacer.getBoundingClientRect();
@@ -134,12 +192,9 @@
     // for why using window.innerHeight here would drift out of sync with
     // when the pin actually releases.
     const scrollable = introSpacer.offsetHeight - introStage.offsetHeight;
-    const progress = clamp(-rect.top / Math.max(scrollable, 1), 0, 1);
+    const scrolledPx = clamp(-rect.top, 0, Math.max(scrollable, 1));
 
-    // Fades out between 60%-100% scroll, identical timing to .hero-stage's
-    // own fade below — the front page is pulled up underneath it the same
-    // way .hero-spacer is pulled up underneath this section.
-    const fadeT = clamp((progress - 0.6) / (1 - 0.6), 0, 1);
+    const fadeT = beatT(scrolledPx, introFade);
     introStage.style.opacity = String(1 - fadeT);
     introStage.style.pointerEvents = fadeT > 0 ? "none" : "auto";
   }
@@ -184,35 +239,44 @@
     return Math.max(min, Math.min(max, v));
   }
 
-  // Keyed to absolute vh scrolled (like updateSplitProgress below), not a
-  // fraction of the total, so the pause added after the highlight doesn't
-  // also change the highlighter's own fade-in speed.
+  // .split-spacer's margin-top in css/style.css pulls it up to overlap the
+  // tail of .hero-spacer by this much — the fade-out beat below is kept the
+  // same length so the digital article appears exactly as the front page
+  // finishes dissolving.
+  const HERO_SPLIT_OVERLAP_VH = 48;
+
+  const heroTimeline = createTimeline();
+  heroTimeline.hold(24);
+  const heroHighlight = heroTimeline.beat(30);
+  heroTimeline.hold(33);
+  const heroFadeOut = heroTimeline.beat(HERO_SPLIT_OVERLAP_VH);
+
   function updateHeroProgress() {
     const rect = heroSpacer.getBoundingClientRect();
     const scrollable = heroSpacer.offsetHeight - window.innerHeight;
     const scrolledPx = clamp(-rect.top, 0, Math.max(scrollable, 1));
 
     // Highlighter fades in over the article.
-    const highlightT = clamp((scrolledPx - vh(24)) / (vh(54) - vh(24)), 0, 1);
-    highlightBox.style.opacity = String(highlightT);
+    highlightBox.style.opacity = String(beatT(scrolledPx, heroHighlight));
 
-    // Front page fades out after a pause (54-87vh) that gives the highlight
-    // a moment to register before anything else starts moving. The two-column
-    // section is pulled up underneath it (see .split-spacer's negative margin
-    // in css/style.css) for the fade's 48vh duration, so the digital article
-    // appears exactly as the front page dissolves, instead of only after
-    // it's gone — that duration (87-135vh) must stay 48vh for the two to
-    // stay in sync even if the pause before it changes.
-    const fadeT = clamp((scrolledPx - vh(87)) / (vh(135) - vh(87)), 0, 1);
+    // Front page fades out after a pause that gives the highlight a moment
+    // to register before anything else starts moving. The two-column
+    // section is pulled up underneath it (see .split-spacer's negative
+    // margin in css/style.css) for this fade's duration, so the digital
+    // article appears exactly as the front page dissolves, instead of only
+    // after it's gone.
+    const fadeT = beatT(scrolledPx, heroFadeOut);
     heroStage.style.opacity = String(1 - fadeT);
     heroStage.style.pointerEvents = fadeT > 0 ? "none" : "auto";
   }
 
   // ---------- Split-stage pin progress ----------
-  // Beats within the pin are keyed to absolute vh scrolled since it stuck
-  // (not a fraction of the total), so extending the hold for a later beat
-  // never stretches or speeds up an earlier one. Budget is mapped out atop
-  // .split-spacer in css/style.css — keep the two in sync.
+  // The whole beat sequence for this stage is built once below as a single
+  // timeline: each call reserves a length (and optional trailing buffer, or
+  // negative "overlap" into whatever came right before it), so moving a beat,
+  // resizing one, or inserting a new one between two others just means
+  // editing that one call — everything after it in the sequence shifts
+  // automatically instead of needing its own absolute vh values updated.
 
   function vh(n) {
     return (n / 100) * window.innerHeight;
@@ -235,6 +299,46 @@
   const markEls = document.querySelectorAll("mark.flag");
   const MARK_MAX_ALPHA = { "flag-verified": 0.28, "flag-altered": 0.4 };
   const MARK_COLOR_VAR = { "flag-verified": "--accent-green", "flag-altered": "--accent-red" };
+
+  // Beat 4 runs FIRST here: the article's letters scatter into the hash and
+  // fly home before the quotes arrive (see ARCHITECTURE.md for the full
+  // beat-by-beat narrative). Each `hold()` is a pause with nothing of its own;
+  // each `beat()` reserves that animation's length and returns the window
+  // `beatT()` reads progress from. `overlap` starts a beat that many vh before
+  // the previous one finished, so two beats can run concurrently without
+  // either one's length needing to account for the other.
+  const splitTimeline = createTimeline();
+  splitTimeline.hold(48); // article + hash panel sit in place, as published
+  const beat4Flight = splitTimeline.beat(108); // letters fly out into the hash
+  const beat4Note = splitTimeline.beat(30); // "nothing is stored" note fades in
+  splitTimeline.hold(54);
+  const beat4Return = splitTimeline.beat(45); // letters fade back in at home
+  // Hash panel dissolves (taking the note with it) as the quotes fade in,
+  // overlapping the tail of the letters' return so the article refills as
+  // the cards arrive.
+  const beat2HashOut = splitTimeline.beat(18, { overlap: 15 });
+  splitTimeline.hold(14);
+  const beat2Marks = splitTimeline.beat(14); // quote/article marks fade in
+  splitTimeline.hold(30); // lets the marks register before beat 3
+  const beat3ArticleFade = splitTimeline.beat(10); // article fades out fully
+  const beat3QuotesSlide = splitTimeline.beat(12); // quotes slide into its place
+  splitTimeline.hold(18);
+  const beat3LeadEnter = splitTimeline.beat(18); // lead-in line slides in
+  splitTimeline.hold(16);
+  const beat3LeadExit = splitTimeline.beat(16); // lead-in line dissolves out
+  // Verified/invalid column slides in from the right, overlapping the lead-in
+  // line's exit above so the two run together rather than back to back.
+  const beat3RevealEnter = splitTimeline.beat(38, { overlap: beat3LeadExit.end - beat3LeadExit.start });
+  splitTimeline.hold(42);
+  const beat35Clear = splitTimeline.beat(18); // beat 3's two blocks slide off
+  // Pillars rise into the space just vacated, overlapping the tail of that exit.
+  const beat35PillarsRise = splitTimeline.beat(28, { overlap: 4 });
+  splitTimeline.hold(78); // pillars stay up to be read
+  const beat35PillarsLift = splitTimeline.beat(18); // pillars lift away
+  // The price crashes into the space they vacated, overlapping the tail of
+  // the pillars' exit above.
+  const beat5Crash = splitTimeline.beat(36, { overlap: 6 });
+  splitTimeline.hold(204); // then releases into normal scroll
 
   // How far .quotes must travel left to land where .article-clip's column
   // sits, derived from the grid's own (untransformed) geometry rather than
@@ -281,14 +385,11 @@
   // How much of a window one individual letter's own trip occupies; the
   // remainder is the stagger spread across all letters. The return is a fade,
   // not a flight, so it wants a shorter per-letter duration than the outbound.
+  // Both stay fixed regardless of how long beat4Flight/beat4Return are tuned
+  // to be — the per-letter animation length and the stagger spread across all
+  // letters (derived from the beat's own length below) are independent knobs.
   const LETTER_FLIGHT_VH = 26;
   const LETTER_FADE_VH = 8;
-  const FLIGHT_START_VH = 48;
-  const FLIGHT_END_VH = 156;
-  // The return is deliberately far shorter than the outbound flight — the text
-  // snaps back as the quotes arrive rather than trickling in over a long hold.
-  const RETURN_START_VH = 240;
-  const RETURN_END_VH = 285;
 
   // Deterministic per-index pseudo-random. Math.random() per frame would make
   // each letter re-roll its arc every scroll tick and jitter in place.
@@ -424,15 +525,15 @@
     // Carolina" collapses to zero width around its out-of-flow children and its
     // highlight never renders.
     const engaged =
-      scrolledPx >= vh(FLIGHT_START_VH - 2) && scrolledPx <= vh(RETURN_END_VH + 2);
+      scrolledPx >= vh(beat4Flight.start - 2) && scrolledPx <= vh(beat4Return.end + 2);
     if (!engaged) {
-      releaseChars(scrolledPx < vh(FLIGHT_START_VH - 2));
+      releaseChars(scrolledPx < vh(beat4Flight.start - 2));
       return;
     }
     engageChars();
 
-    const outStagger = vh(FLIGHT_END_VH - FLIGHT_START_VH - LETTER_FLIGHT_VH);
-    const backStagger = vh(RETURN_END_VH - RETURN_START_VH - LETTER_FADE_VH);
+    const outStagger = vh(beat4Flight.end - beat4Flight.start - LETTER_FLIGHT_VH);
+    const backStagger = vh(beat4Return.end - beat4Return.start - LETTER_FADE_VH);
     const n = charLayout.chars.length;
 
     charLayout.chars.forEach((c, i) => {
@@ -441,13 +542,13 @@
       // top down without the letters leaving in a rigid mechanical sweep.
       const order = (i / Math.max(n - 1, 1)) * 0.85 + fx.jitter * 0.15;
       const out = clamp(
-        (scrolledPx - (vh(FLIGHT_START_VH) + order * outStagger)) / vh(LETTER_FLIGHT_VH),
+        (scrolledPx - (vh(beat4Flight.start) + order * outStagger)) / vh(LETTER_FLIGHT_VH),
         0, 1
       );
       // Reuses `order`, so the article replenishes from the top in the same
       // sequence it emptied.
       const back = clamp(
-        (scrolledPx - (vh(RETURN_START_VH) + order * backStagger)) / vh(LETTER_FADE_VH),
+        (scrolledPx - (vh(beat4Return.start) + order * backStagger)) / vh(LETTER_FADE_VH),
         0, 1
       );
 
@@ -494,9 +595,7 @@
     // at random, so per-slot arrival would fill it in a scattered order. Once
     // resolved it stays resolved: the fingerprint persists, and it leaves only
     // with the whole panel's fade in beat 2.
-    const outT = clamp(
-      (scrolledPx - vh(FLIGHT_START_VH)) / (vh(FLIGHT_END_VH) - vh(FLIGHT_START_VH)), 0, 1
-    );
+    const outT = beatT(scrolledPx, beat4Flight);
     const filled = Math.round(outT * hashDigitEls.length);
     hashDigitEls.forEach((el, i) => {
       el.classList.toggle("is-filled", i < filled);
@@ -518,43 +617,42 @@
     // column from the start, so it scrolls in with the article rather than
     // animating in on its own. Its only move is dissolving out for beat 2, once
     // the letters have flown out and faded home again.
-    const hashOutT = clamp((scrolledPx - vh(270)) / (vh(288) - vh(270)), 0, 1);
+    const hashOutT = beatT(scrolledPx, beat2HashOut);
     hashColumn.style.opacity = String(1 - hashOutT);
 
     updateCharFlight(scrolledPx);
 
     // Stays up once shown — it leaves with the panel's own fade, not on its own.
-    const noteInT = clamp((scrolledPx - vh(156)) / (vh(186) - vh(156)), 0, 1);
-    hashNoteEl.style.opacity = String(noteInT);
+    hashNoteEl.style.opacity = String(beatT(scrolledPx, beat4Note));
 
     // Beat 2: the quotes cross-fade in as the hash leaves, overlapping the tail
     // of the letters' return so the article refills as the cards arrive.
-    const quotesInT = clamp((scrolledPx - vh(270)) / (vh(288) - vh(270)), 0, 1);
+    const quotesInT = beatT(scrolledPx, beat2HashOut);
 
     // Beat 2: highlights fade in, and fade back out on the same curve when
     // scrolling back up — continuously tied to scroll position, same as
     // .hero-highlight, rather than a one-time reveal that only runs forward.
-    const markT = clamp((scrolledPx - vh(302)) / (vh(316) - vh(302)), 0, 1);
+    const markT = beatT(scrolledPx, beat2Marks);
     markEls.forEach((m) => {
       const tone = m.classList.contains("flag-verified") ? "flag-verified" : "flag-altered";
       m.style.backgroundColor = `hsla(var(${MARK_COLOR_VAR[tone]}), ${markT * MARK_MAX_ALPHA[tone]})`;
     });
 
     // Beat 3: article fades out fully first, then quotes slides into its
-    // place — sequential, not simultaneous. The pause before it (316-346vh)
-    // gives the Carolina marks a moment to register.
-    const fadeT = clamp((scrolledPx - vh(346)) / (vh(356) - vh(346)), 0, 1);
+    // place — sequential, not simultaneous. The hold before it gives the
+    // Carolina marks a moment to register.
+    const fadeT = beatT(scrolledPx, beat3ArticleFade);
     articleClip.style.opacity = String(1 - fadeT);
 
-    const slideT = clamp((scrolledPx - vh(356)) / (vh(368) - vh(356)), 0, 1);
+    const slideT = beatT(scrolledPx, beat3QuotesSlide);
     quotesEl.style.opacity = String(quotesInT);
 
 
     // Beat 3: lead-in line slides in from the right, holds, then exits via a
     // cross dissolve (opacity only, no reverse slide) rather than sliding
     // back out the way it came in.
-    const leadEnterT = clamp((scrolledPx - vh(386)) / (vh(404) - vh(386)), 0, 1);
-    const leadExitT = clamp((scrolledPx - vh(420)) / (vh(436) - vh(420)), 0, 1);
+    const leadEnterT = beatT(scrolledPx, beat3LeadEnter);
+    const leadExitT = beatT(scrolledPx, beat3LeadExit);
     leadColumn.style.transform = `translateX(${(1 - leadEnterT) * 100}%)`;
     leadColumn.style.opacity = String(1 - leadExitT);
 
@@ -563,20 +661,20 @@
     // overlap rather than running back to back. Rests further right than a 100%
     // shift so its box-shadow's blur radius doesn't creep into .split-grid's
     // clipped (overflow-x: hidden) area while off-screen.
-    const enterT = clamp((scrolledPx - vh(420)) / (vh(458) - vh(420)), 0, 1);
+    const enterT = beatT(scrolledPx, beat3RevealEnter);
 
     // Beat 3.5: beat 3's two blocks clear the stage in opposite directions —
     // the quotes (already parked in the article's column) continue off left,
     // the verified/invalid column retreats off right the way it came in.
-    const clearT = easeInOut(clamp((scrolledPx - vh(500)) / (vh(518) - vh(500)), 0, 1));
+    const clearT = easeInOut(beatT(scrolledPx, beat35Clear));
     const quotesX = quotesShiftX() * slideT - clearT * splitGrid.getBoundingClientRect().width;
     quotesEl.style.transform = `translateX(${quotesX}px)`;
     revealColumn.style.transform = `translateX(${((1 - enterT) + clearT) * 140}%)`;
 
     // Beat 3.5: the three pillars rise into the space just vacated, each on its
     // own stagger, hold, then lift away together so beat 5 can land there.
-    const ownIn = clamp((scrolledPx - vh(500)) / (vh(542) - vh(500)), 0, 1);
-    const ownOut = clamp((scrolledPx - vh(620)) / (vh(638) - vh(620)), 0, 1);
+    const ownIn = beatT(scrolledPx, beat35PillarsRise);
+    const ownOut = beatT(scrolledPx, beat35PillarsLift);
     ownershipBlockEl.style.opacity = String(clamp(ownIn / 0.25, 0, 1) * (1 - ownOut));
     const ownHeadE = 1 - Math.pow(1 - clamp(ownIn / 0.5, 0, 1), 3);
     ownershipBlockEl.style.transform = `translateY(${(1 - ownHeadE) * 5 - ownOut * 6}vh)`;
@@ -595,13 +693,26 @@
     // impact rather than a fade — hence ease-out only, no symmetric ease. Scale
     // overshoot stays modest because .split-grid clips the x axis; the drop
     // carries the weight instead, since the y axis is unclipped.
-    const crashT = clamp((scrolledPx - vh(632)) / (vh(668) - vh(632)), 0, 1);
+    const crashT = beatT(scrolledPx, beat5Crash);
     const crashE = 1 - Math.pow(1 - crashT, 3);
     priceBlockEl.style.opacity = String(clamp(crashT / 0.3, 0, 1));
     priceBlockEl.style.transform =
       `translateY(${(1 - crashE) * -26}vh) scale(${1.55 - 0.55 * crashE})`;
 
     positionFillerCards();
+  }
+
+  // Spacer heights are derived from each section's own timeline total (plus
+  // its stage's live content height) rather than hard-coded in CSS, so
+  // lengthening or reordering beats above is the only edit tuning ever needs
+  // — nothing to keep in sync on the CSS side.
+  function sizeSpacers() {
+    sizeSpacer(introSpacer, introStage, introTimeline);
+    // .hero-stage is a fixed 100vh (see css/style.css), not content-sized
+    // like the other two stages, so its own height is window.innerHeight
+    // rather than an offsetHeight measurement.
+    heroSpacer.style.height = window.innerHeight + vh(heroTimeline.total) + "px";
+    sizeSpacer(splitSpacer, splitStage, splitTimeline);
   }
 
   let ticking = false;
@@ -618,15 +729,22 @@
   }
 
   window.addEventListener("scroll", onScrollOrResize, { passive: true });
+  // Sizing runs separately from the scroll-driven pass above (and isn't
+  // re-run on every scroll tick): it changes each spacer's height, which
+  // would itself shift scroll position if it ran while the user was mid-scroll.
+  function resizeSpacersAndRefresh() {
+    sizeSpacers();
+    onScrollOrResize();
+  }
   // Beat 4's letter positions are pixel measurements of the old layout, so they
   // have to be thrown away and re-measured against the new one.
   window.addEventListener("resize", () => {
     releaseChars(true);
     charLayout = null;
-    onScrollOrResize();
+    resizeSpacersAndRefresh();
   });
-  frontPageImg.addEventListener("load", onScrollOrResize);
-  onScrollOrResize();
+  frontPageImg.addEventListener("load", resizeSpacersAndRefresh);
+  resizeSpacersAndRefresh();
 
   // ---------- Generic reveal-on-scroll ----------
 

@@ -22,9 +22,9 @@ html, body {
 
 /* ---------- Section 0: Intro ---------- */
 
-/* Same pin/hold/fade mechanic as .hero-spacer below, and pulled up under the
-   intro's fade-out the same way .split-spacer is pulled up under this one's
-   — see js/main.js's updateIntroProgress for the timing this pairs with. */
+/* Same pin/hold/fade mechanic as .hero-spacer below. Height here is only a
+   pre-JS fallback — js/main.js's introTimeline sets the real height (stage's
+   own content height + timeline total) once it runs. */
 .intro-spacer {
   position: relative;
   z-index: 3;
@@ -176,14 +176,11 @@ html, body {
 /* ---------- Section 1: Hero front page ---------- */
 
 /* Pulled up under the intro's fade-out (see .intro-stage timing in
-   js/main.js), same pattern .split-spacer uses on this section.
-   Scroll budget (see the vh() thresholds in js/main.js's updateHeroProgress
-   — keep in sync); .hero-stage is a fixed 100vh, so this scrollable range
-   (height minus 100vh) is always exactly 135vh:
-     0   - 24vh   hold
-     24  - 54vh   highlighter fades in over the article
-     54  - 87vh   hold (pause so the highlight registers before it fades)
-     87  - 135vh  front page fades out, then releases into normal scroll */
+   js/main.js), same pattern .split-spacer uses on this section. Height here
+   is only a pre-JS fallback — js/main.js's heroTimeline is the source of
+   truth for the actual scroll budget and sets this section's real height
+   (100vh stage + timeline total) once it runs. See heroTimeline in
+   js/main.js for the beat lengths themselves. */
 .hero-spacer {
   position: relative;
   z-index: 2;
@@ -252,44 +249,11 @@ html, body {
 /* Pulled up under the hero's fade-out (see .hero-highlight timing in js/main.js),
    then pins at the top of the viewport and holds there while later beats play
    out, instead of scrolling past like a plain in-flow section would.
-   Scroll budget (see the vh() thresholds in js/main.js — keep in sync).
-   Beat 4 runs FIRST here: the article's letters scatter into the hash and then
-   fly home, and the quotes only arrive once it has reassembled.
-     (beat 4's hash panel isn't animated in at all — it sits in its column and
-      scrolls in with the article, same as the article's own placement)
-     0    - 48vh    hold (article and hash panel in place, as published)
-     48   - 156vh   beat 4: article letters fly across and jumble into the hash
-                    (each letter's own flight lasts LETTER_FLIGHT_VH of this)
-     156  - 186vh   beat 4: "nothing is stored" note fades in (and stays up —
-                    it leaves with the panel, not on its own)
-     186  - 240vh   hold (empty article beside the resolved hash)
-     240  - 285vh   beat 4: letters fade back in at home (no reverse flight),
-                    top down in the order they left; the hash stays resolved.
-                    Much shorter than the outbound flight — the text snaps back
-                    rather than trickling in.
-     270  - 288vh   beat 2: hash panel dissolves out (taking the hash text and
-                    note with it) as the quotes fade in, overlapping the tail of
-                    the return above so the article refills as the cards arrive
-     288  - 302vh   hold
-     302  - 316vh   beat 2: quote/article marks fade in
-     316  - 346vh   hold (pause so the Carolina marks register before beat 3)
-     346  - 356vh   beat 3: article fades out (finishes before the slide starts)
-     356  - 368vh   beat 3: quotes slide left
-     368  - 386vh   hold (pause before the lead-in line enters)
-     386  - 404vh   beat 3: lead-in line slides in from the right
-     404  - 420vh   hold (lead-in line stays put)
-     420  - 436vh   beat 3: lead-in line dissolves out (cross dissolve, not a slide)
-     420  - 458vh   beat 3: verified/invalid column slides in from the right,
-                    overlapping the lead-in line's dissolve above
-     458  - 500vh   hold (pause before beat 3.5 clears the stage)
-     500  - 518vh   beat 3.5: beat 3's two blocks slide out left and right
-     514  - 542vh   beat 3.5: keys/control/rights pillars rise into the space
-                    they vacated, staggered, overlapping the tail of that exit
-     542  - 620vh   hold (pillars stay up to be read)
-     620  - 638vh   beat 3.5: pillars lift away and dissolve out
-     632  - 668vh   beat 5: the $0 crashes into the space they vacated,
-                    overlapping the tail of the pillars' exit above
-     668  - 872vh   hold, then release into normal scroll */
+   Height here is only a pre-JS fallback — js/main.js's splitTimeline is the
+   single source of truth for the beat sequence and lengths (built with
+   createTimeline()'s beat()/hold() calls) and sets this section's real
+   height once it runs. See the comment above splitTimeline in js/main.js for
+   the full beat-by-beat breakdown. */
 .split-spacer {
   position: relative;
   z-index: 1;

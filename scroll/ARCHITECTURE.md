@@ -15,7 +15,7 @@ open `index.html` in a browser.
 | `index.html` | Structure only. One `<section>` per beat group, empty elements that JS fills. |
 | `clients/default.js` | **All copy and image paths.** Sets `window.SITE_CONFIG`. Loaded *before* `js/main.js`. |
 | `js/main.js` | Populates the DOM from the config, then drives every animation from scroll position. |
-| `css/style.css` | Layout, type, and the scroll-budget comments that document each section's timing. |
+| `css/style.css` | Layout and type. Spacer heights are just a pre-JS fallback — js/main.js's timelines set the real heights. |
 | `assets/images/` | Front-page and article screenshots referenced by the config. |
 
 ## Making a client version
@@ -38,22 +38,52 @@ dissolves, instead of only after it's gone.
 
 ### Timing convention (important)
 
-Beats are keyed to **absolute vh scrolled since the stage pinned**, via the
-`vh(n)` helper — never to a fraction of the total budget. That way, lengthening
-a hold for a later beat can never stretch or speed up an earlier one.
+Each section builds its own **timeline** once, near the top of its block in
+`js/main.js`, via `createTimeline()`:
+
+```js
+const timeline = createTimeline();
+timeline.hold(48);                       // a pause with nothing animating
+const introFade = timeline.beat(30);     // reserves 30vh, returns { start, end }
+const nextBeat = timeline.beat(20, { overlap: 10 }); // starts 10vh before introFade ends
+```
+
+`beat(length, { buffer, overlap })` reserves `length` vh, optionally followed
+by `buffer` vh of hold, and returns the `{ start, end }` window (in vh scrolled
+since the stage pinned) that beat occupies. `overlap` starts the beat that many
+vh *before* the current cursor, so it runs concurrently with the tail of
+whatever came right before instead of strictly after it. `hold(length)`
+reserves a plain pause.
+
+Read progress out of a window with `beatT(scrolledPx, beat)`, which replaces
+hand-written `clamp((scrolledPx - vh(START)) / (vh(END) - vh(START)), 0, 1)`
+math:
 
 ```js
 const scrolledPx = clamp(-rect.top, 0, Math.max(scrollable, 1));
-const t = clamp((scrolledPx - vh(START)) / (vh(END) - vh(START)), 0, 1);
+const t = beatT(scrolledPx, introFade);
 ```
+
+Because every beat is stated as a length relative to the cursor rather than a
+hand-computed absolute threshold, **moving, resizing, or reordering a beat only
+means editing that one `beat()`/`hold()` call** — everything declared after it
+in the same timeline shifts automatically. There is nothing to keep in sync by
+hand across separate beats.
 
 `scrollable` for a sticky element is `spacerHeight - stageHeight` — **not**
 `spacerHeight - window.innerHeight`. `.intro-stage` and `.split-stage` have no
 fixed height (they're sized by their own copy), so using the viewport height
 there desynchronises the budget from when the pin actually releases.
 
-Every threshold is mirrored in a scroll-budget comment above the matching
-`*-spacer` rule in `css/style.css`. **Keep the two in sync.**
+Each spacer's actual height is set from its timeline: `sizeSpacer(spacer,
+stage, timeline)` sets `height = stage.offsetHeight + vh(timeline.total)`, run
+once on load/resize (not on every scroll tick, since changing a spacer's height
+while scrolling would itself move the scroll position). `.hero-stage` is a
+fixed `100vh` rather than content-sized, so its spacer is sized against
+`window.innerHeight` instead. The `height` values written directly in
+`css/style.css` are only a pre-JS fallback; **the timeline in `js/main.js` is
+the single source of truth for scroll budgets** — there is no separate budget
+to keep in sync in CSS.
 
 ### Everything is scroll-position-driven, not transition-driven
 
@@ -67,8 +97,10 @@ transition-based reveal left is the generic `IntersectionObserver` /
 ## The beats
 
 ### Beat 0 — intro (`.intro-spacer` / `.intro-stage`)
-Logo, mission statement, three feature blurbs from the config. Holds, then
-fades out over the last 40% of its budget.
+Logo, mission statement, three feature blurbs from the config. Starts fading
+from the very first pixel scrolled (`introTimeline` has no leading `hold()`) so
+the front page underneath begins revealing immediately rather than after a
+wait — see `introTimeline` in `js/main.js`.
 
 ### Beat 1 — print front page (`.hero-spacer` / `.hero-stage`)
 Full-bleed front-page image with a yellow highlighter (`#hero-highlight-box`)

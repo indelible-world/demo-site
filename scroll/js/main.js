@@ -175,14 +175,14 @@
   // (rather than a bare number below) since .intro-fade's length must stay
   // >= this for the front page to already be visible for the entire window
   // where it's pulled up underneath the intro.
-  const INTRO_HERO_OVERLAP_VH = 48;
+  const INTRO_HERO_OVERLAP_VH = 32;
 
   // Fades from the very first pixel scrolled — no hold first — so the front
   // page underneath starts revealing immediately instead of only after a
   // long hold, and finishes revealing well before the old fade would even
   // have started.
   const introTimeline = createTimeline();
-  const introFade = introTimeline.beat(Math.max(70, INTRO_HERO_OVERLAP_VH));
+  const introFade = introTimeline.beat(Math.max(32, INTRO_HERO_OVERLAP_VH));
 
   function updateIntroProgress() {
     const rect = introSpacer.getBoundingClientRect();

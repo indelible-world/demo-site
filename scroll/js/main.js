@@ -253,7 +253,7 @@
 
   function updateHeroProgress() {
     const rect = heroSpacer.getBoundingClientRect();
-    const scrollable = heroSpacer.offsetHeight - window.innerHeight;
+    const scrollable = heroSpacer.offsetHeight - viewportHeight;
     const scrolledPx = clamp(-rect.top, 0, Math.max(scrollable, 1));
 
     // Highlighter fades in over the article.
@@ -278,8 +278,12 @@
   // editing that one call — everything after it in the sequence shifts
   // automatically instead of needing its own absolute vh values updated.
 
+  // Cached rather than read live: mobile browsers fire resize (and change
+  // innerHeight) as the URL bar collapses/expands mid-scroll, which would
+  // otherwise shift every beat threshold under the user's feet.
+  let viewportHeight = window.innerHeight;
   function vh(n) {
-    return (n / 100) * window.innerHeight;
+    return (n / 100) * viewportHeight;
   }
 
   const splitSpacer = document.querySelector(".split-spacer");
@@ -709,9 +713,9 @@
   function sizeSpacers() {
     sizeSpacer(introSpacer, introStage, introTimeline);
     // .hero-stage is a fixed 100vh (see css/style.css), not content-sized
-    // like the other two stages, so its own height is window.innerHeight
-    // rather than an offsetHeight measurement.
-    heroSpacer.style.height = window.innerHeight + vh(heroTimeline.total) + "px";
+    // like the other two stages, so its own height is viewportHeight rather
+    // than an offsetHeight measurement.
+    heroSpacer.style.height = viewportHeight + vh(heroTimeline.total) + "px";
     sizeSpacer(splitSpacer, splitStage, splitTimeline);
   }
 
@@ -736,9 +740,15 @@
     sizeSpacers();
     onScrollOrResize();
   }
+  let viewportWidth = window.innerWidth;
   // Beat 4's letter positions are pixel measurements of the old layout, so they
   // have to be thrown away and re-measured against the new one.
   window.addEventListener("resize", () => {
+    // Mobile browsers also fire resize when the URL bar collapses/expands
+    // during scroll — only width moving means an actual layout change.
+    if (window.innerWidth === viewportWidth) return;
+    viewportWidth = window.innerWidth;
+    viewportHeight = window.innerHeight;
     releaseChars(true);
     charLayout = null;
     resizeSpacersAndRefresh();

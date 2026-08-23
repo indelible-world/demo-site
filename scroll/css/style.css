@@ -185,7 +185,7 @@ html, body {
   position: relative;
   z-index: 2;
   height: 235vh;
-  margin-top: -72vh;
+  margin-top: -64vh;
 }
 
 .hero-stage {
@@ -810,6 +810,13 @@ a { color: inherit; }
   /* Wraps here — as one line it runs past .split-grid's clipped edge. */
   .price-footnote {
     white-space: normal;
+  }
+
+.hero-spacer {
+  position: relative;
+  z-index: 2;
+  height: 235vh;
+  margin-top: -124vh;
   }
 }
 

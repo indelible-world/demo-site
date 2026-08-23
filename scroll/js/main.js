@@ -312,7 +312,7 @@
   // the previous one finished, so two beats can run concurrently without
   // either one's length needing to account for the other.
   const splitTimeline = createTimeline();
-  splitTimeline.hold(48); // article + hash panel sit in place, as published
+  splitTimeline.hold(8); // article + hash panel sit in place, as published
   const beat4Flight = splitTimeline.beat(108); // letters fly out into the hash
   const beat4Note = splitTimeline.beat(30); // "nothing is stored" note fades in
   splitTimeline.hold(54);
@@ -321,7 +321,7 @@
   // overlapping the tail of the letters' return so the article refills as
   // the cards arrive.
   const beat2HashOut = splitTimeline.beat(18, { overlap: 15 });
-  splitTimeline.hold(14);
+  splitTimeline.hold(6);
   const beat2Marks = splitTimeline.beat(14); // quote/article marks fade in
   splitTimeline.hold(30); // lets the marks register before beat 3
   const beat3ArticleFade = splitTimeline.beat(10); // article fades out fully

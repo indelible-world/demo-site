@@ -58,7 +58,7 @@ window.SITE_CONFIG = {
     accurate: {
       label: "ORIGINAL",
       source: "As published",
-      text: "…Senators Thom Tillis of North Carolina and John Cornyn of Texas refused to support Mr. Blanche’s nomination since he committed in writing to dropping a $1.8 billion fund…",
+      text: "…Senators Thom Tillis of North Carolina and John Cornyn of Texas refused to support Mr. Blanche’s nomination unless he committed in writing to dropping a $1.8 billion fund…",
       highlightPhrase: "refused to support"
     },
     inaccurate: {

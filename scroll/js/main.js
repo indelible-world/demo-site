@@ -584,8 +584,13 @@
 
       const e = easeInOut(t);
       const bow = Math.sin(Math.PI * t);
-      const x = c.dx * e + fx.arcX * bow;
-      const y = c.dy * e + fx.arcY * bow;
+      // arcX/arcY are rolled once as fixed pixel amounts against a desktop-
+      // width layout, so on narrower viewports they overshoot far past where
+      // the same letters land on desktop — scale them down with viewport
+      // width to keep the arc's on-screen size consistent across devices.
+      const arcScale = clamp(viewportWidth / 1200, 0.35, 1);
+      const x = c.dx * e + fx.arcX * bow * arcScale;
+      const y = c.dy * e + fx.arcY * bow * arcScale;
       const rot = fx.spin * e;
       const scale = 1 - 0.15 * e;
       // Fades out only over the last stretch, so it's still legible as a letter

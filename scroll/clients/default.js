@@ -104,12 +104,12 @@ window.SITE_CONFIG = {
       {
         icon: "🔑",
         title: "Keys",
-        body: "Root signing keys never leave the newsroom. You only delegate access to a secure Indelible key which can be revoked at any time."
+        body: "Root signing keys (a sort of ultimate stamp) never leave the newsroom. You only delegate access to a secure Indelible key which can be revoked at any time."
       },
       {
         icon: "🎛️",
         title: "Control",
-        body: "You can completely revoke our key's ability to sign articles on your behalf at any time, and you have seven days to revoke any erroneous attestations. We never certify articles without your permission."
+        body: "You can completely revoke a key's ability to sign articles on your behalf at any time, and you have seven days to revoke any erroneous attestations. The system never certifies articles without your permission."
       },
       {
         icon: "©",

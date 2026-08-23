@@ -81,7 +81,7 @@ window.SITE_CONFIG = {
       '"Published by nytimes.com at 6/22/2026, 8:38:00 PM."'
     ],
     lowerLabel: "INVALID",
-    lowerText: '"The quote could not be verified against the attestation."'
+    lowerText: '"The quote could not be verified against the true source."'
   },
 
   // Beat 4: the article returns on the left, then every letter of it flies

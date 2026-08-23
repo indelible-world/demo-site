@@ -109,8 +109,10 @@
   const hashPanel = document.getElementById("hash-panel");
   const hashValueEl = document.getElementById("hash-value");
   const hashNoteEl = document.getElementById("hash-note");
+  const hashCaptionEl = document.getElementById("hash-caption");
   hashPanel.querySelector(".quote-badge").textContent = cfg.beat4.hashLabel;
   hashNoteEl.textContent = cfg.beat4.note;
+  hashCaptionEl.textContent = cfg.beat4.caption || "";
 
   const hashDigitEls = [];
   cfg.beat4.hash.split("").forEach((ch) => {
@@ -376,6 +378,12 @@
     // either one individually — it reads as one line, not paired with either.
     centerOn(leadTextEl, quotesEl, quotesTop);
     centerOn(hashPanel, quotesEl, quotesTop);
+    // Sits just above the panel's own top edge — .hash-column has no height
+    // of its own (both children are absolutely positioned), so the caption
+    // can't be anchored with CSS alone the way .hash-panel's `top` is.
+    const hashPanelTop = parseFloat(hashPanel.style.top) || 0;
+    const captionHeight = hashCaptionEl.getBoundingClientRect().height;
+    hashCaptionEl.style.top = hashPanelTop - captionHeight - 14 + "px";
     // Beats 3.5 and 5 span both columns, but still center on the quote cards'
     // span so they land on the same eye line everything else has held.
     centerOn(ownershipBlockEl, quotesEl, quotesTop);
@@ -625,6 +633,13 @@
     hashColumn.style.opacity = String(1 - hashOutT);
 
     updateCharFlight(scrolledPx);
+
+    // Fades in over just the first sliver of the flight, so it's fully visible
+    // for nearly the whole time the letters are airborne, not still ramping up.
+    const captionInEnd = beat4Flight.start + (beat4Flight.end - beat4Flight.start) * 0.15;
+    hashCaptionEl.style.opacity = String(
+      beatT(scrolledPx, { start: beat4Flight.start, end: captionInEnd })
+    );
 
     // Stays up once shown — it leaves with the panel's own fade, not on its own.
     hashNoteEl.style.opacity = String(beatT(scrolledPx, beat4Note));

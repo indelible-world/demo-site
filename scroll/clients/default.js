@@ -88,6 +88,8 @@ window.SITE_CONFIG = {
   // across and scrambles into the fingerprint on the right — nothing but the
   // fingerprint is ever written to the chain.
   beat4: {
+    // Small caption above the hash panel, fades in as the letters fly.
+    caption: "We use cryptography to generate a unique fingerprint of your published text.",
     hashLabel: "STORED FINGERPRINT",
     // Each character becomes one landing slot for the article's letters, so its
     // length sets how the hash fills in.

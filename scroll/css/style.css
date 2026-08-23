@@ -501,6 +501,22 @@ html, body {
   position: relative;
 }
 
+/* Positioned absolutely with `top` set in js/main.js, just above .hash-panel's
+   own top edge — .hash-column has no height of its own, so it can't be
+   anchored with `bottom: 100%` the way a normal-flow sibling could. Starts
+   hidden; js/main.js fades it in with the letters' flight. */
+.hash-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0;
+  font-family: var(--inter);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #666;
+  opacity: 0;
+}
+
 /* Positioned absolutely with `top` set in js/main.js so it centers on the same
    vertical span the quote cards occupied, matching .filler-card's approach. */
 .hash-panel {
@@ -772,7 +788,8 @@ a { color: inherit; }
     font-size: 0.62rem;
   }
 
-  .hash-note {
+  .hash-note,
+  .hash-caption {
     font-size: 0.58rem;
   }
 
@@ -867,7 +884,8 @@ a { color: inherit; }
     font-size: 0.5rem;
   }
 
-  .hash-note {
+  .hash-note,
+  .hash-caption {
     font-size: 0.5rem;
   }
 

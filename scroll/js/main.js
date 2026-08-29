@@ -104,6 +104,11 @@
   document.getElementById("price-caption").textContent = cfg.bigNumber.caption;
   document.getElementById("price-footnote").textContent = cfg.bigNumber.footnote || "";
 
+  document.getElementById("cta-heading").textContent = cfg.cta.heading;
+  const ctaButtonEl = document.getElementById("cta-button");
+  ctaButtonEl.textContent = cfg.cta.buttonText;
+  ctaButtonEl.href = cfg.cta.buttonHref;
+
   // Beat 4: the hash is built one <span> per hex digit, because each digit is
   // a landing slot the article's letters are aimed at individually.
   const hashPanel = document.getElementById("hash-panel");
@@ -302,6 +307,8 @@
   const fillerLowerEl = document.getElementById("filler-lower");
   const ownershipBlockEl = document.getElementById("ownership-block");
   const priceBlockEl = document.getElementById("price-block");
+  const ctaBlockEl = document.getElementById("cta-block");
+  const ctaLinksEl = document.getElementById("cta-links");
   const markEls = document.querySelectorAll("mark.flag");
   const MARK_MAX_ALPHA = { "flag-verified": 0.28, "flag-altered": 0.4 };
   const MARK_COLOR_VAR = { "flag-verified": "--accent-green", "flag-altered": "--accent-red" };
@@ -344,6 +351,12 @@
   // The price crashes into the space they vacated, overlapping the tail of
   // the pillars' exit above.
   const bigNumberCrash = splitTimeline.beat(36, { overlap: 6 });
+  splitTimeline.hold(78); // price stays up to be read
+  const bigNumberLift = splitTimeline.beat(18); // price lifts away
+  // The CTA rises into the space it vacated, overlapping the tail of that exit.
+  const ctaRise = splitTimeline.beat(28, { overlap: 6 });
+  splitTimeline.hold(24); // CTA settles before the links slide in beneath it
+  const ctaLinksSlide = splitTimeline.beat(20); // links slide in, CTA itself stays put
   splitTimeline.hold(204); // then releases into normal scroll
 
   // How far .quotes must travel left to land where .article-clip's column
@@ -388,6 +401,7 @@
     // span so they land on the same eye line everything else has held.
     centerOn(ownershipBlockEl, quotesEl, quotesTop);
     centerOn(priceBlockEl, quotesEl, quotesTop);
+    centerOn(ctaBlockEl, quotesEl, quotesTop);
   }
 
   // ---------- Beat 4: article letters fly into the hash ----------
@@ -719,9 +733,25 @@
     // carries the weight instead, since the y axis is unclipped.
     const crashT = beatT(scrolledPx, bigNumberCrash);
     const crashE = 1 - Math.pow(1 - crashT, 3);
-    priceBlockEl.style.opacity = String(clamp(crashT / 0.3, 0, 1));
+    const priceLiftT = beatT(scrolledPx, bigNumberLift);
+    priceBlockEl.style.opacity = String(clamp(crashT / 0.3, 0, 1) * (1 - priceLiftT));
     priceBlockEl.style.transform =
-      `translateY(${(1 - crashE) * -26}vh) scale(${1.55 - 0.55 * crashE})`;
+      `translateY(${(1 - crashE) * -26 - priceLiftT * 6}vh) scale(${1.55 - 0.55 * crashE})`;
+
+    // Beat 6: rises into the space the price vacates, same easing as the
+    // ownership pillars' entrance above.
+    const ctaInT = beatT(scrolledPx, ctaRise);
+    const ctaE = 1 - Math.pow(1 - ctaInT, 3);
+    ctaBlockEl.style.opacity = String(ctaInT);
+    ctaBlockEl.style.transform = `translateY(${(1 - ctaE) * 5}vh)`;
+
+    // Beat 7: slides in on its own transform/opacity, independent of
+    // .cta-block above, so the heading/button read as staying fixed in place
+    // while just the links animate in beneath them.
+    const linksInT = beatT(scrolledPx, ctaLinksSlide);
+    const linksE = 1 - Math.pow(1 - linksInT, 3);
+    ctaLinksEl.style.opacity = String(linksInT);
+    ctaLinksEl.style.transform = `translateY(${(1 - linksE) * 4}vh)`;
 
     positionFillerCards();
   }

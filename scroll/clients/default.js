@@ -126,5 +126,13 @@ window.SITE_CONFIG = {
     amount: "$0",
     caption: "Free Verifications Forever & Free Certifications for Pilot Partners",
     footnote: "AI-powered misinformation is a growing problem that Indelible is building the solution to. Let's solve it today."
+  },
+
+  // Beat 6: after the price above lifts away, this rises into the space it
+  // leaves and holds through the end of the scroll.
+  cta: {
+    heading: "Contact us to learn more",
+    buttonText: "Contact Us",
+    buttonHref: "https://indelible.world"
   }
 };

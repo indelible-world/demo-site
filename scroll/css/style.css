@@ -660,6 +660,67 @@ html, body {
   color: #888;
 }
 
+/* Beat 6: spans the full grid like .price-column above, so it rises into the
+   same centered space the price vacates. Opacity/transform from js/main.js. */
+.cta-column {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  position: relative;
+  pointer-events: none;
+}
+
+/* Positioned absolutely with `top` set in js/main.js, centered on the same
+   vertical span the quote cards occupied — same approach as .price-block. */
+.cta-block {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.cta-heading {
+  margin: 0 0 2rem;
+  font-family: var(--sans);
+  font-size: clamp(1.8rem, 3.6vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.cta-button {
+  display: inline-block;
+  pointer-events: auto;
+  padding: 0.9rem 2.2rem;
+  font-family: var(--sans);
+  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--paper);
+  background: hsl(var(--accent-blue));
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+/* Beat 7: animated separately from .cta-block's own opacity/transform (which
+   stop changing once beat 6 settles), so this slides in underneath while the
+   heading/button above read as staying put. */
+.cta-links {
+  margin: 2.4rem 0 0;
+  pointer-events: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.9rem;
+  color: #888;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.cta-links a {
+  color: inherit;
+}
+
 /* Each digit starts blank and is filled in as a letter lands on it. */
 .hash-digit {
   opacity: 0.12;
@@ -709,19 +770,7 @@ mark.flag {
   border-radius: 3px;
 }
 
-/* ---------- Continuation placeholder ---------- */
-
-.more {
-  max-width: 720px;
-  margin: 0 auto 20vh;
-  padding: 0 6vw;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #888;
-  font-size: 0.9rem;
-  text-align: center;
-}
-
-a { color: inherit; } 
+a { color: inherit; }
 
 /* ---------- Narrow screens ---------- */
 

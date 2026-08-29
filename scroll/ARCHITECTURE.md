@@ -201,6 +201,20 @@ vertically centred on the quote cards' span via `centerOn()` so they land on the
 same eye line every other beat has held. The drop carries the motion because
 `.split-grid` clips the x axis but leaves y visible.
 
+### Beat 6 — call to action (same stage)
+The price holds, then lifts away the same way the ownership pillars did, and
+`.cta-block` (heading + button, from `cfg.cta`) rises into the space it
+vacates and holds through the end of the scroll.
+
+`.cta-column` spans `grid-column: 1 / -1` like `.price-column`, and is
+vertically centred on the quote cards' span via the same `centerOn()` call.
+
+### Beat 7 — links (same stage)
+`.cta-links` (the `indelible.world` / docs links) slides up beneath the CTA
+once it's settled. It's animated on its own opacity/transform, separate from
+`.cta-block`'s, so the heading/button read as staying fixed in place while
+only the links move in underneath them.
+
 ## Conventions worth keeping
 
 - Copy lives in `clients/*.js`, never in HTML or JS.

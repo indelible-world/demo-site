@@ -132,7 +132,7 @@ window.SITE_CONFIG = {
   // leaves and holds through the end of the scroll.
   cta: {
     heading: "Contact us to learn more",
-    buttonText: "Contact Us",
-    buttonHref: "https://indelible.world"
+    buttonText: "Get in touch",
+    buttonHref: "https://indelible.world/#contact"
   }
 };

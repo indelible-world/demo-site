@@ -357,7 +357,9 @@
   const ctaRise = splitTimeline.beat(28, { overlap: 6 });
   splitTimeline.hold(24); // CTA settles before the links slide in beneath it
   const ctaLinksSlide = splitTimeline.beat(20); // links slide in, CTA itself stays put
-  splitTimeline.hold(204); // then releases into normal scroll
+  // No trailing hold: this is the last beat on the page, so the timeline (and
+  // therefore the spacer) ends right as the links finish sliding in, instead
+  // of leaving extra scrollable space with nothing left to animate.
 
   // How far .quotes must travel left to land where .article-clip's column
   // sits, derived from the grid's own (untransformed) geometry rather than
@@ -642,6 +644,15 @@
     // let the hold budget below fall out of sync with when the element
     // actually unpins, so it would start scrolling away mid-"hold".
     const scrollable = splitSpacer.offsetHeight - splitStage.offsetHeight;
+    // This is the last section on the page: once every beat finishes, sticky
+    // positioning would otherwise release and let the (already complete)
+    // stage keep sliding up off-screen for the rest of the spacer, revealing
+    // blank page beneath it. Snap scrollY back the instant that would start,
+    // so the final beat holds in place instead of scrolling away.
+    const overshoot = -rect.top - scrollable;
+    if (overshoot > 0) {
+      window.scrollTo(0, window.scrollY - overshoot);
+    }
     const scrolledPx = clamp(-rect.top, 0, Math.max(scrollable, 1));
 
     // Beat 4 (first): the hash panel is simply part of the stage, sitting in its

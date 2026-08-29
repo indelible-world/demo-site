@@ -70,7 +70,7 @@ window.SITE_CONFIG = {
   },
 
   // Beat 3: two blocks that slide in to replace the quotes column.
-  beat3: {
+  attestations: {
     // Larger lead-in line that slides in first, holds, then slides back out
     // before the verified/invalid blocks take its place.
     leadText: "Quotes can be checked against an immutable fingerprint of the original published text...",
@@ -87,7 +87,7 @@ window.SITE_CONFIG = {
   // Beat 4: the article returns on the left, then every letter of it flies
   // across and scrambles into the fingerprint on the right — nothing but the
   // fingerprint is ever written to the chain.
-  beat4: {
+  fingerprint: {
     // Small caption above the hash panel, fades in as the letters fly.
     caption: "We use cryptography to generate a unique fingerprint of your published text.",
     hashLabel: "STORED FINGERPRINT",
@@ -122,7 +122,7 @@ window.SITE_CONFIG = {
   },
 
   // Beat 5: after the pillars above clear, this crashes into the empty space.
-  beat5: {
+  bigNumber: {
     amount: "$0",
     caption: "Free Verifications Forever & Free Certifications for Pilot Partners",
     footnote: "AI-powered misinformation is a growing problem that Indelible is building the solution to. Let's solve it today."

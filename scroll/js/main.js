@@ -70,10 +70,10 @@
     renderWithHighlight(blockquote, data.text, data.highlightPhrase, tone);
   }
 
-  document.querySelector("#lead-text p").textContent = cfg.beat3.leadText;
+  document.querySelector("#lead-text p").textContent = cfg.attestations.leadText;
 
-  fillFillerCard(document.getElementById("filler-upper"), cfg.beat3.upperLabel, cfg.beat3.upperText);
-  fillFillerCard(document.getElementById("filler-lower"), cfg.beat3.lowerLabel, cfg.beat3.lowerText);
+  fillFillerCard(document.getElementById("filler-upper"), cfg.attestations.upperLabel, cfg.attestations.upperText);
+  fillFillerCard(document.getElementById("filler-lower"), cfg.attestations.lowerLabel, cfg.attestations.lowerText);
 
   // `text` may be a string or an array of strings — an array renders one
   // paragraph per entry, so a card's copy can be broken into separate blocks.
@@ -100,9 +100,9 @@
   });
   const ownershipItemEls = Array.from(ownershipItemsEl.children);
 
-  document.getElementById("price-amount").textContent = cfg.beat5.amount;
-  document.getElementById("price-caption").textContent = cfg.beat5.caption;
-  document.getElementById("price-footnote").textContent = cfg.beat5.footnote || "";
+  document.getElementById("price-amount").textContent = cfg.bigNumber.amount;
+  document.getElementById("price-caption").textContent = cfg.bigNumber.caption;
+  document.getElementById("price-footnote").textContent = cfg.bigNumber.footnote || "";
 
   // Beat 4: the hash is built one <span> per hex digit, because each digit is
   // a landing slot the article's letters are aimed at individually.
@@ -110,12 +110,12 @@
   const hashValueEl = document.getElementById("hash-value");
   const hashNoteEl = document.getElementById("hash-note");
   const hashCaptionEl = document.getElementById("hash-caption");
-  hashPanel.querySelector(".quote-badge").textContent = cfg.beat4.hashLabel;
-  hashNoteEl.textContent = cfg.beat4.note;
-  hashCaptionEl.textContent = cfg.beat4.caption || "";
+  hashPanel.querySelector(".quote-badge").textContent = cfg.fingerprint.hashLabel;
+  hashNoteEl.textContent = cfg.fingerprint.note;
+  hashCaptionEl.textContent = cfg.fingerprint.caption || "";
 
   const hashDigitEls = [];
-  cfg.beat4.hash.split("").forEach((ch) => {
+  cfg.fingerprint.hash.split("").forEach((ch) => {
     const span = document.createElement("span");
     span.className = "hash-digit";
     span.textContent = ch;
@@ -315,35 +315,35 @@
   // either one's length needing to account for the other.
   const splitTimeline = createTimeline();
   splitTimeline.hold(8); // article + hash panel sit in place, as published
-  const beat4Flight = splitTimeline.beat(108); // letters fly out into the hash
-  const beat4Note = splitTimeline.beat(30); // "nothing is stored" note fades in
+  const fingerprintFlight = splitTimeline.beat(108); // letters fly out into the hash
+  const fingerprintNote = splitTimeline.beat(30); // "nothing is stored" note fades in
   splitTimeline.hold(54);
-  const beat4Return = splitTimeline.beat(45); // letters fade back in at home
+  const fingerprintReturn = splitTimeline.beat(45); // letters fade back in at home
   // Hash panel dissolves (taking the note with it) as the quotes fade in,
   // overlapping the tail of the letters' return so the article refills as
   // the cards arrive.
-  const beat2HashOut = splitTimeline.beat(18, { overlap: 15 });
+  const quotesHashOut = splitTimeline.beat(18, { overlap: 15 });
   splitTimeline.hold(6);
-  const beat2Marks = splitTimeline.beat(14); // quote/article marks fade in
+  const quotesMarks = splitTimeline.beat(14); // quote/article marks fade in
   splitTimeline.hold(30); // lets the marks register before beat 3
-  const beat3ArticleFade = splitTimeline.beat(10); // article fades out fully
-  const beat3QuotesSlide = splitTimeline.beat(12); // quotes slide into its place
+  const attestationsArticleFade = splitTimeline.beat(10); // article fades out fully
+  const attestationsQuotesSlide = splitTimeline.beat(12); // quotes slide into its place
   splitTimeline.hold(18);
-  const beat3LeadEnter = splitTimeline.beat(18); // lead-in line slides in
+  const attestationsLeadEnter = splitTimeline.beat(18); // lead-in line slides in
   splitTimeline.hold(16);
-  const beat3LeadExit = splitTimeline.beat(16); // lead-in line dissolves out
+  const attestationsLeadExit = splitTimeline.beat(16); // lead-in line dissolves out
   // Verified/invalid column slides in from the right, overlapping the lead-in
   // line's exit above so the two run together rather than back to back.
-  const beat3RevealEnter = splitTimeline.beat(38, { overlap: beat3LeadExit.end - beat3LeadExit.start });
+  const attestationsRevealEnter = splitTimeline.beat(38, { overlap: attestationsLeadExit.end - attestationsLeadExit.start });
   splitTimeline.hold(42);
-  const beat35Clear = splitTimeline.beat(18); // beat 3's two blocks slide off
+  const attestationsClear = splitTimeline.beat(18); // beat 3's two blocks slide off
   // Pillars rise into the space just vacated, overlapping the tail of that exit.
-  const beat35PillarsRise = splitTimeline.beat(28, { overlap: 4 });
+  const ownershipPillarsRise = splitTimeline.beat(28, { overlap: 4 });
   splitTimeline.hold(78); // pillars stay up to be read
-  const beat35PillarsLift = splitTimeline.beat(18); // pillars lift away
+  const ownershipPillarsLift = splitTimeline.beat(18); // pillars lift away
   // The price crashes into the space they vacated, overlapping the tail of
   // the pillars' exit above.
-  const beat5Crash = splitTimeline.beat(36, { overlap: 6 });
+  const bigNumberCrash = splitTimeline.beat(36, { overlap: 6 });
   splitTimeline.hold(204); // then releases into normal scroll
 
   // How far .quotes must travel left to land where .article-clip's column
@@ -397,7 +397,7 @@
   // How much of a window one individual letter's own trip occupies; the
   // remainder is the stagger spread across all letters. The return is a fade,
   // not a flight, so it wants a shorter per-letter duration than the outbound.
-  // Both stay fixed regardless of how long beat4Flight/beat4Return are tuned
+  // Both stay fixed regardless of how long fingerprintFlight/fingerprintReturn are tuned
   // to be — the per-letter animation length and the stagger spread across all
   // letters (derived from the beat's own length below) are independent knobs.
   const LETTER_FLIGHT_VH = 26;
@@ -537,15 +537,15 @@
     // Carolina" collapses to zero width around its out-of-flow children and its
     // highlight never renders.
     const engaged =
-      scrolledPx >= vh(beat4Flight.start - 2) && scrolledPx <= vh(beat4Return.end + 2);
+      scrolledPx >= vh(fingerprintFlight.start - 2) && scrolledPx <= vh(fingerprintReturn.end + 2);
     if (!engaged) {
-      releaseChars(scrolledPx < vh(beat4Flight.start - 2));
+      releaseChars(scrolledPx < vh(fingerprintFlight.start - 2));
       return;
     }
     engageChars();
 
-    const outStagger = vh(beat4Flight.end - beat4Flight.start - LETTER_FLIGHT_VH);
-    const backStagger = vh(beat4Return.end - beat4Return.start - LETTER_FADE_VH);
+    const outStagger = vh(fingerprintFlight.end - fingerprintFlight.start - LETTER_FLIGHT_VH);
+    const backStagger = vh(fingerprintReturn.end - fingerprintReturn.start - LETTER_FADE_VH);
     const n = charLayout.chars.length;
 
     charLayout.chars.forEach((c, i) => {
@@ -554,13 +554,13 @@
       // top down without the letters leaving in a rigid mechanical sweep.
       const order = (i / Math.max(n - 1, 1)) * 0.85 + fx.jitter * 0.15;
       const out = clamp(
-        (scrolledPx - (vh(beat4Flight.start) + order * outStagger)) / vh(LETTER_FLIGHT_VH),
+        (scrolledPx - (vh(fingerprintFlight.start) + order * outStagger)) / vh(LETTER_FLIGHT_VH),
         0, 1
       );
       // Reuses `order`, so the article replenishes from the top in the same
       // sequence it emptied.
       const back = clamp(
-        (scrolledPx - (vh(beat4Return.start) + order * backStagger)) / vh(LETTER_FADE_VH),
+        (scrolledPx - (vh(fingerprintReturn.start) + order * backStagger)) / vh(LETTER_FADE_VH),
         0, 1
       );
 
@@ -612,7 +612,7 @@
     // at random, so per-slot arrival would fill it in a scattered order. Once
     // resolved it stays resolved: the fingerprint persists, and it leaves only
     // with the whole panel's fade in beat 2.
-    const outT = beatT(scrolledPx, beat4Flight);
+    const outT = beatT(scrolledPx, fingerprintFlight);
     const filled = Math.round(outT * hashDigitEls.length);
     hashDigitEls.forEach((el, i) => {
       el.classList.toggle("is-filled", i < filled);
@@ -634,29 +634,29 @@
     // column from the start, so it scrolls in with the article rather than
     // animating in on its own. Its only move is dissolving out for beat 2, once
     // the letters have flown out and faded home again.
-    const hashOutT = beatT(scrolledPx, beat2HashOut);
+    const hashOutT = beatT(scrolledPx, quotesHashOut);
     hashColumn.style.opacity = String(1 - hashOutT);
 
     updateCharFlight(scrolledPx);
 
     // Fades in over just the first sliver of the flight, so it's fully visible
     // for nearly the whole time the letters are airborne, not still ramping up.
-    const captionInEnd = beat4Flight.start + (beat4Flight.end - beat4Flight.start) * 0.15;
+    const captionInEnd = fingerprintFlight.start + (fingerprintFlight.end - fingerprintFlight.start) * 0.15;
     hashCaptionEl.style.opacity = String(
-      beatT(scrolledPx, { start: beat4Flight.start, end: captionInEnd })
+      beatT(scrolledPx, { start: fingerprintFlight.start, end: captionInEnd })
     );
 
     // Stays up once shown — it leaves with the panel's own fade, not on its own.
-    hashNoteEl.style.opacity = String(beatT(scrolledPx, beat4Note));
+    hashNoteEl.style.opacity = String(beatT(scrolledPx, fingerprintNote));
 
     // Beat 2: the quotes cross-fade in as the hash leaves, overlapping the tail
     // of the letters' return so the article refills as the cards arrive.
-    const quotesInT = beatT(scrolledPx, beat2HashOut);
+    const quotesInT = beatT(scrolledPx, quotesHashOut);
 
     // Beat 2: highlights fade in, and fade back out on the same curve when
     // scrolling back up — continuously tied to scroll position, same as
     // .hero-highlight, rather than a one-time reveal that only runs forward.
-    const markT = beatT(scrolledPx, beat2Marks);
+    const markT = beatT(scrolledPx, quotesMarks);
     markEls.forEach((m) => {
       const tone = m.classList.contains("flag-verified") ? "flag-verified" : "flag-altered";
       m.style.backgroundColor = `hsla(var(${MARK_COLOR_VAR[tone]}), ${markT * MARK_MAX_ALPHA[tone]})`;
@@ -665,18 +665,18 @@
     // Beat 3: article fades out fully first, then quotes slides into its
     // place — sequential, not simultaneous. The hold before it gives the
     // Carolina marks a moment to register.
-    const fadeT = beatT(scrolledPx, beat3ArticleFade);
+    const fadeT = beatT(scrolledPx, attestationsArticleFade);
     articleClip.style.opacity = String(1 - fadeT);
 
-    const slideT = beatT(scrolledPx, beat3QuotesSlide);
+    const slideT = beatT(scrolledPx, attestationsQuotesSlide);
     quotesEl.style.opacity = String(quotesInT);
 
 
     // Beat 3: lead-in line slides in from the right, holds, then exits via a
     // cross dissolve (opacity only, no reverse slide) rather than sliding
     // back out the way it came in.
-    const leadEnterT = beatT(scrolledPx, beat3LeadEnter);
-    const leadExitT = beatT(scrolledPx, beat3LeadExit);
+    const leadEnterT = beatT(scrolledPx, attestationsLeadEnter);
+    const leadExitT = beatT(scrolledPx, attestationsLeadExit);
     leadColumn.style.transform = `translateX(${(1 - leadEnterT) * 100}%)`;
     leadColumn.style.opacity = String(1 - leadExitT);
 
@@ -685,20 +685,20 @@
     // overlap rather than running back to back. Rests further right than a 100%
     // shift so its box-shadow's blur radius doesn't creep into .split-grid's
     // clipped (overflow-x: hidden) area while off-screen.
-    const enterT = beatT(scrolledPx, beat3RevealEnter);
+    const enterT = beatT(scrolledPx, attestationsRevealEnter);
 
     // Beat 3.5: beat 3's two blocks clear the stage in opposite directions —
     // the quotes (already parked in the article's column) continue off left,
     // the verified/invalid column retreats off right the way it came in.
-    const clearT = easeInOut(beatT(scrolledPx, beat35Clear));
+    const clearT = easeInOut(beatT(scrolledPx, attestationsClear));
     const quotesX = quotesShiftX() * slideT - clearT * splitGrid.getBoundingClientRect().width;
     quotesEl.style.transform = `translateX(${quotesX}px)`;
     revealColumn.style.transform = `translateX(${((1 - enterT) + clearT) * 140}%)`;
 
     // Beat 3.5: the three pillars rise into the space just vacated, each on its
     // own stagger, hold, then lift away together so beat 5 can land there.
-    const ownIn = beatT(scrolledPx, beat35PillarsRise);
-    const ownOut = beatT(scrolledPx, beat35PillarsLift);
+    const ownIn = beatT(scrolledPx, ownershipPillarsRise);
+    const ownOut = beatT(scrolledPx, ownershipPillarsLift);
     ownershipBlockEl.style.opacity = String(clamp(ownIn / 0.25, 0, 1) * (1 - ownOut));
     const ownHeadE = 1 - Math.pow(1 - clamp(ownIn / 0.5, 0, 1), 3);
     ownershipBlockEl.style.transform = `translateY(${(1 - ownHeadE) * 5 - ownOut * 6}vh)`;
@@ -717,7 +717,7 @@
     // impact rather than a fade — hence ease-out only, no symmetric ease. Scale
     // overshoot stays modest because .split-grid clips the x axis; the drop
     // carries the weight instead, since the y axis is unclipped.
-    const crashT = beatT(scrolledPx, beat5Crash);
+    const crashT = beatT(scrolledPx, bigNumberCrash);
     const crashE = 1 - Math.pow(1 - crashT, 3);
     priceBlockEl.style.opacity = String(clamp(crashT / 0.3, 0, 1));
     priceBlockEl.style.transform =

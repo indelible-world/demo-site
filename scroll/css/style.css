@@ -53,6 +53,7 @@ html, body {
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.01em;
+  text-decoration: none;
 }
 
 /* Mirrors .intro-logo across the top of the stage. Fades out with the rest

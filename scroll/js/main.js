@@ -817,6 +817,25 @@
   frontPageImg.addEventListener("load", resizeSpacersAndRefresh);
   resizeSpacersAndRefresh();
 
+  // ---------- Auto-scroll to front page ----------
+  // Lets an inbound link land straight on the front-page beat instead of the
+  // intro — .hero-stage is sticky, so scrolling to .hero-spacer's own top
+  // pins it full-screen rather than partway through the intro's fade.
+  if (new URLSearchParams(window.location.search).get("skip") === "true") {
+    const targetY = heroSpacer.getBoundingClientRect().top + window.scrollY;
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+    const duration = 500;
+    const startTime = performance.now();
+
+    function stepScroll(now) {
+      const t = clamp((now - startTime) / duration, 0, 1);
+      window.scrollTo(0, startY + distance * easeInOut(t));
+      if (t < 1) requestAnimationFrame(stepScroll);
+    }
+    requestAnimationFrame(stepScroll);
+  }
+
   // ---------- Generic reveal-on-scroll ----------
 
   const revealTargets = document.querySelectorAll(

@@ -233,14 +233,16 @@ html, body {
   opacity: 0;
 }
 
-/* Mirrors .intro-scroll-cue's position/arrow, but for the hero stage —
-   desktop-only (see .hero-caption below for the mobile equivalent), and
-   fades in later since a visitor has already been on the page a while by
-   the time this section is reached. */
+/* Mirrors .intro-scroll-cue's arrow, but for the hero stage — pushed into
+   the corner rather than mirroring the logo's inset, since there's no logo
+   here to align with. Desktop-only (see .hero-caption below for the mobile
+   equivalent, shown instead wherever there's enough room at the bottom for
+   it), and fades in later since a visitor has already been on the page a
+   while by the time this section is reached. */
 .hero-scroll-cue {
   position: absolute;
-  top: 5vh;
-  right: 6vw;
+  top: 4vh;
+  right: 3vw;
   display: flex;
   align-items: center;
   opacity: 0;

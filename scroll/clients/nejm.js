@@ -82,7 +82,7 @@ window.SITE_CONFIG = {
       '"Published in nejm.org at 4/23/2026, 2:38:00 PM."'
     ],
     lowerLabel: "INVALID",
-    lowerText: '"The quote could not be verified against the true source."'
+    lowerText: '"The quote could not be verified against the article published on NEJM."'
   },
 
   // Beat 4: the article returns on the left, then every letter of it flies

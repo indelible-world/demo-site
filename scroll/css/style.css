@@ -15,6 +15,7 @@
 html, body {
   margin: 0;
   padding: 0;
+  overscroll-behavior: none;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--serif);
@@ -284,11 +285,15 @@ html, body {
   background: var(--paper);
   height: 972vh;
   margin-top: -48vh;
+  /* Clips a stage taller than the viewport (negative margin in js/main.js)
+     so it can't extend the page; `clip` keeps sticky working. */
+  overflow: clip;
 }
 
 .split-stage {
   position: sticky;
   top: 0;
+  min-height: 100vh;
 }
 
 .split {

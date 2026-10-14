@@ -637,22 +637,11 @@
 
   function updateSplitProgress() {
     const rect = splitSpacer.getBoundingClientRect();
-    // .split-stage has no fixed height (unlike .hero-stage's 100vh) — it's
-    // sized by its own content, which is rarely exactly one viewport tall.
-    // The real point where a top:0 sticky element releases is spacerHeight
-    // minus ITS OWN height, not minus the viewport — using innerHeight here
-    // let the hold budget below fall out of sync with when the element
-    // actually unpins, so it would start scrolling away mid-"hold".
-    const scrollable = splitSpacer.offsetHeight - splitStage.offsetHeight;
-    // This is the last section on the page: once every beat finishes, sticky
-    // positioning would otherwise release and let the (already complete)
-    // stage keep sliding up off-screen for the rest of the spacer, revealing
-    // blank page beneath it. Snap scrollY back the instant that would start,
-    // so the final beat holds in place instead of scrolling away.
-    const overshoot = -rect.top - scrollable;
-    if (overshoot > 0) {
-      window.scrollTo(0, window.scrollY - overshoot);
-    }
+    // The spacer is the last element and sizeSpacers() makes it exactly one
+    // viewport plus the timeline, so the pin releases at the very last scroll
+    // pixel and the final beat never moves. Overscroll bounce is suppressed
+    // by `overscroll-behavior: none` on html/body.
+    const scrollable = splitSpacer.offsetHeight - viewportHeight;
     const scrolledPx = clamp(-rect.top, 0, Math.max(scrollable, 1));
 
     // Beat 4 (first): the hash panel is simply part of the stage, sitting in its
@@ -777,7 +766,12 @@
     // like the other two stages, so its own height is viewportHeight rather
     // than an offsetHeight measurement.
     heroSpacer.style.height = viewportHeight + vh(heroTimeline.total) + "px";
-    sizeSpacer(splitSpacer, splitStage, splitTimeline);
+    // Sized off the viewport, not the stage: a stage taller than the viewport
+    // would otherwise unpin early and slide up during the final beat. Its
+    // excess height is folded out of the spacer via a negative margin instead.
+    splitStage.style.marginBottom =
+      Math.min(0, viewportHeight - splitStage.offsetHeight) + "px";
+    splitSpacer.style.height = viewportHeight + vh(splitTimeline.total) + "px";
   }
 
   let ticking = false;

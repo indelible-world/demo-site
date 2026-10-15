@@ -285,10 +285,19 @@
   // editing that one call — everything after it in the sequence shifts
   // automatically instead of needing its own absolute vh values updated.
 
-  // Cached rather than read live: mobile browsers fire resize (and change
-  // innerHeight) as the URL bar collapses/expands mid-scroll, which would
-  // otherwise shift every beat threshold under the user's feet.
-  let viewportHeight = window.innerHeight;
+  // Measured from a 100vh probe, not innerHeight: CSS vh on mobile is the
+  // fixed large viewport (URL bar hidden) while innerHeight tracks the bar, so
+  // using it made spacer lengths disagree with the 100vh stages and the page
+  // needed extra scrolling before the bar would hide again.
+  const vhProbe = document.createElement("div");
+  vhProbe.setAttribute("aria-hidden", "true");
+  vhProbe.style.cssText =
+    "position:fixed;top:0;left:0;width:0;height:100vh;visibility:hidden;pointer-events:none";
+  document.body.appendChild(vhProbe);
+  function measureViewportHeight() {
+    return vhProbe.offsetHeight || window.innerHeight;
+  }
+  let viewportHeight = measureViewportHeight();
   function vh(n) {
     return (n / 100) * viewportHeight;
   }
@@ -799,11 +808,12 @@
   // Beat 4's letter positions are pixel measurements of the old layout, so they
   // have to be thrown away and re-measured against the new one.
   window.addEventListener("resize", () => {
-    // Mobile browsers also fire resize when the URL bar collapses/expands
-    // during scroll — only width moving means an actual layout change.
-    if (window.innerWidth === viewportWidth) return;
+    // The probe's height doesn't change when the mobile URL bar collapses/
+    // expands, so only a real width/height change gets past this.
+    const nextHeight = measureViewportHeight();
+    if (window.innerWidth === viewportWidth && nextHeight === viewportHeight) return;
     viewportWidth = window.innerWidth;
-    viewportHeight = window.innerHeight;
+    viewportHeight = nextHeight;
     releaseChars(true);
     charLayout = null;
     resizeSpacersAndRefresh();

@@ -191,19 +191,29 @@
   const introTimeline = createTimeline();
   const introFade = introTimeline.beat(Math.max(32, INTRO_HERO_OVERLAP_VH));
 
-  function updateIntroProgress() {
-    const rect = introSpacer.getBoundingClientRect();
-    // .intro-stage has no fixed height — it's sized by its own (variable
-    // length) copy, so measure it live rather than assuming it's a full
-    // viewport tall. See the identical fix on .split-stage's scrollable
-    // for why using window.innerHeight here would drift out of sync with
-    // when the pin actually releases.
-    const scrollable = introSpacer.offsetHeight - introStage.offsetHeight;
-    const scrolledPx = clamp(-rect.top, 0, Math.max(scrollable, 1));
+  // Document-space top and pin length of each spacer, measured once per layout
+  // (see relayout) so scroll ticks never read layout.
+  const sections = {};
+  let splitShiftX = 0;
+  let splitGridWidth = 0;
+
+  // Writes a style only when it differs from the last value written here.
+  function put(el, prop, value) {
+    const cache = el._s || (el._s = {});
+    if (cache[prop] === value) return;
+    cache[prop] = value;
+    el.style[prop] = value;
+  }
+
+  function updateIntroProgress(y) {
+    // .intro-stage is content-sized, so `scrollable` is measured (and cached)
+    // in measureSections() rather than assumed to be a viewport tall.
+    const sec = sections.intro;
+    const scrolledPx = clamp(y - sec.top, 0, Math.max(sec.scrollable, 1));
 
     const fadeT = beatT(scrolledPx, introFade);
-    introStage.style.opacity = String(1 - fadeT);
-    introStage.style.pointerEvents = fadeT > 0 ? "none" : "auto";
+    put(introStage, "opacity", String(1 - fadeT));
+    put(introStage, "pointerEvents", fadeT > 0 ? "none" : "auto");
   }
 
   // ---------- Hero scroll-linked highlight ----------
@@ -258,13 +268,12 @@
   heroTimeline.hold(33);
   const heroFadeOut = heroTimeline.beat(HERO_SPLIT_OVERLAP_VH);
 
-  function updateHeroProgress() {
-    const rect = heroSpacer.getBoundingClientRect();
-    const scrollable = heroSpacer.offsetHeight - viewportHeight;
-    const scrolledPx = clamp(-rect.top, 0, Math.max(scrollable, 1));
+  function updateHeroProgress(y) {
+    const sec = sections.hero;
+    const scrolledPx = clamp(y - sec.top, 0, Math.max(sec.scrollable, 1));
 
     // Highlighter fades in over the article.
-    highlightBox.style.opacity = String(beatT(scrolledPx, heroHighlight));
+    put(highlightBox, "opacity", String(beatT(scrolledPx, heroHighlight)));
 
     // Front page fades out after a pause that gives the highlight a moment
     // to register before anything else starts moving. The two-column
@@ -273,8 +282,8 @@
     // article appears exactly as the front page dissolves, instead of only
     // after it's gone.
     const fadeT = beatT(scrolledPx, heroFadeOut);
-    heroStage.style.opacity = String(1 - fadeT);
-    heroStage.style.pointerEvents = fadeT > 0 ? "none" : "auto";
+    put(heroStage, "opacity", String(1 - fadeT));
+    put(heroStage, "pointerEvents", fadeT > 0 ? "none" : "auto");
   }
 
   // ---------- Split-stage pin progress ----------
@@ -374,8 +383,9 @@
   // sits, derived from the grid's own (untransformed) geometry rather than
   // the columns' live rects — those move once the slide starts, which would
   // make measuring them directly a moving target.
-  function quotesShiftX() {
+  function measureQuotesShiftX() {
     const gridRect = splitGrid.getBoundingClientRect();
+    splitGridWidth = gridRect.width;
     const gapPx = parseFloat(getComputedStyle(splitGrid).columnGap) || 0;
     const articleFr = 1.1;
     const quotesFr = 1;
@@ -387,32 +397,30 @@
   // different (lorem ipsum) text, so they won't naturally end up the same
   // height as the quote cards. Center each filler card on its corresponding
   // quote card's vertical midpoint instead of trusting equal flex gaps.
-  function centerOn(fillerEl, quoteEl, quotesTop) {
-    const quoteRect = quoteEl.getBoundingClientRect();
-    const quoteCenter = quoteRect.top + quoteRect.height / 2 - quotesTop;
-    const fillerHeight = fillerEl.getBoundingClientRect().height;
-    fillerEl.style.top = quoteCenter - fillerHeight / 2 + "px";
+  // offsetTop/offsetHeight ignore transforms, so this is stable mid-animation
+  // and only needs to run when the layout changes.
+  function centerOn(fillerEl, quoteEl) {
+    const quoteCenter = quoteEl.offsetTop - quotesEl.offsetTop + quoteEl.offsetHeight / 2;
+    fillerEl.style.top = quoteCenter - fillerEl.offsetHeight / 2 + "px";
   }
 
   function positionFillerCards() {
-    const quotesTop = quotesEl.getBoundingClientRect().top;
-    centerOn(fillerUpperEl, quoteAccurateEl, quotesTop);
-    centerOn(fillerLowerEl, quoteInaccurateEl, quotesTop);
+    centerOn(fillerUpperEl, quoteAccurateEl);
+    centerOn(fillerLowerEl, quoteInaccurateEl);
     // Lead-in line centers on the combined span of both quote cards, not
     // either one individually — it reads as one line, not paired with either.
-    centerOn(leadTextEl, quotesEl, quotesTop);
-    centerOn(hashPanel, quotesEl, quotesTop);
+    centerOn(leadTextEl, quotesEl);
+    centerOn(hashPanel, quotesEl);
     // Sits just above the panel's own top edge — .hash-column has no height
     // of its own (both children are absolutely positioned), so the caption
     // can't be anchored with CSS alone the way .hash-panel's `top` is.
     const hashPanelTop = parseFloat(hashPanel.style.top) || 0;
-    const captionHeight = hashCaptionEl.getBoundingClientRect().height;
-    hashCaptionEl.style.top = hashPanelTop - captionHeight - 14 + "px";
+    hashCaptionEl.style.top = hashPanelTop - hashCaptionEl.offsetHeight - 14 + "px";
     // Beats 3.5 and 5 span both columns, but still center on the quote cards'
     // span so they land on the same eye line everything else has held.
-    centerOn(ownershipBlockEl, quotesEl, quotesTop);
-    centerOn(priceBlockEl, quotesEl, quotesTop);
-    centerOn(ctaBlockEl, quotesEl, quotesTop);
+    centerOn(ownershipBlockEl, quotesEl);
+    centerOn(priceBlockEl, quotesEl);
+    centerOn(ctaBlockEl, quotesEl);
   }
 
   // ---------- Beat 4: article letters fly into the hash ----------
@@ -478,6 +486,7 @@
 
   let charLayout = null;
   let charsEngaged = false;
+  let lastFilled = -1;
 
   // Measured once and cached: pulling the letters out of flow destroys the
   // geometry we need, so it has to be read while the article is still intact.
@@ -528,10 +537,12 @@
       p.el.style.height = p.height + "px";
     });
     layout.chars.forEach((c) => {
+      c.el._s = null;
       c.el.style.left = c.left + "px";
       c.el.style.top = c.top + "px";
     });
     articleBody.classList.add("is-flying");
+    lastFilled = -1;
     charsEngaged = true;
   }
 
@@ -546,6 +557,7 @@
     });
     charLayout.chars.forEach((c, i) => {
       c.el.style.cssText = "";
+      c.el._s = null;
       c.el.textContent = charFx[i].original;
     });
     if (resetHash) hashDigitEls.forEach((el) => el.classList.remove("is-filled"));
@@ -593,17 +605,24 @@
       // the transform and ramping opacity from home reads as the text
       // replenishing in place rather than flying back down.
       if (back > 0) {
-        c.el.style.transform = "";
-        c.el.style.opacity = back >= 1 ? "" : String(back);
+        put(c.el, "transform", "");
+        put(c.el, "opacity", back >= 1 ? "" : String(back));
         if (c.el.textContent !== fx.original) c.el.textContent = fx.original;
         return;
       }
 
       const t = out;
       if (t === 0) {
-        c.el.style.transform = "";
-        c.el.style.opacity = "";
+        put(c.el, "transform", "");
+        put(c.el, "opacity", "");
         if (c.el.textContent !== fx.original) c.el.textContent = fx.original;
+        return;
+      }
+
+      // Landed and fully faded: nothing left to change until it fades back in.
+      if (t === 1) {
+        put(c.el, "opacity", "0");
+        if (c.el.textContent !== fx.digit) c.el.textContent = fx.digit;
         return;
       }
 
@@ -622,9 +641,8 @@
       // for most of the trip and only dissolves as it merges into the hash.
       const opacity = 1 - clamp((t - 0.7) / 0.3, 0, 1);
 
-      c.el.style.transform =
-        `translate(${x}px, ${y}px) rotate(${rot}deg) scale(${scale})`;
-      c.el.style.opacity = String(opacity);
+      put(c.el, "transform", `translate(${x}px, ${y}px) rotate(${rot}deg) scale(${scale})`);
+      put(c.el, "opacity", String(opacity));
 
       // Scrambles into a hex digit mid-flight — the letter arrives as part of
       // the fingerprint, not as itself.
@@ -639,9 +657,12 @@
     // with the whole panel's fade in beat 2.
     const outT = beatT(scrolledPx, fingerprintFlight);
     const filled = Math.round(outT * hashDigitEls.length);
-    hashDigitEls.forEach((el, i) => {
-      el.classList.toggle("is-filled", i < filled);
-    });
+    if (filled !== lastFilled) {
+      lastFilled = filled;
+      hashDigitEls.forEach((el, i) => {
+        el.classList.toggle("is-filled", i < filled);
+      });
+    }
   }
 
   function updateSplitProgress() {

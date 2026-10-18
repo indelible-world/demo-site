@@ -786,7 +786,6 @@ html, body {
   position: absolute;
   display: inline-block;
   white-space: pre;
-  will-change: transform, opacity;
 }
 
 /* Background color is set directly from scroll progress in js/main.js

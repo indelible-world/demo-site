@@ -12,7 +12,7 @@ window.SITE_CONFIG = {
     logo: "Indelible",
     eyebrow: "Verified media provenance",
     heading: "Restoring trust in news and information.",
-    subtext: "indelible.world built a protocol for establishing verifiable, timestamped authorship of digital content, without relying on any centralized platform, server, or authority.",
+    subtext: "indelible.world built a protocol for establishing verifiable, timestamped authorship of digital content without relying on any centralized platform, server, or authority.",
     // Prompt in the top-right corner, fades in a beat after the page loads.
     scrollCue: "Scroll down to see how",
     features: [
@@ -29,7 +29,7 @@ window.SITE_CONFIG = {
       {
         icon: "💬",
         title: "Native Quote Verification",
-        body: "Quotes can be attributed to their original authors without requiring the full text of the article on standby."
+        body: "Quotes can be attributed to their original authors without requiring the full text of the article."
       }
     ]
   },
@@ -94,7 +94,7 @@ window.SITE_CONFIG = {
     // Each character becomes one landing slot for the article's letters, so its
     // length sets how the hash fills in.
     hash: "bafyrei3f8a1c05d7b26e94af0c5183be27d4f6a9152c7e0db438f1c6a2e59d70b4183c",
-    note: "We store the article's fingerprint (and fingerprint only) to a public, timestamped ledger. The article text cannot be reconstructed from it, only checked against it."
+    note: "We store only the article's fingerprint on a public, timestamped ledger. The article text cannot be reconstructed from the fingerprint; it can only be checked against it."
   },
 
   // Beat 3.5: beat 3's two blocks clear off to the left and right, and these
@@ -106,7 +106,7 @@ window.SITE_CONFIG = {
       {
         icon: "🔑",
         title: "Keys",
-        body: "Root signing keys (a sort of ultimate stamp) never leave the newsroom. You only delegate access to a secure Indelible key which can be revoked at any time."
+        body: "Root signing keys (a sort of ultimate stamp) never leave the newsroom. You only delegate access to a secure Indelible key, which can be revoked at any time."
       },
       {
         icon: "🎛️",
@@ -125,7 +125,7 @@ window.SITE_CONFIG = {
   bigNumber: {
     amount: "$0",
     caption: "Free Verifications Forever & Free Certifications for Pilot Partners",
-    footnote: "AI-powered misinformation is a growing problem that Indelible is building the solution to. Let's solve it today."
+    footnote: "AI-powered misinformation is a growing problem, and Indelible is building the solution. Let's solve it today."
   },
 
   // Beat 6: after the price above lifts away, this rises into the space it

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Newsroom Demo</title>
+  <link rel="preload" as="image" href="assets/images/pacer/frontpage.png" />
+  <link rel="preload" as="image" href="assets/images/pacer/article.png" />
+  <link rel="preload" as="script" href="clients/pacer.js" />
+  <link rel="preload" as="script" href="js/main.js" />
+</head>
+<body>
+  <!-- Reuses index.html's markup; only the client config differs. -->
+  <script>
+    (async function () {
+      const html = await (await fetch("index.html")).text();
+      const doc = new DOMParser().parseFromString(html, "text/html");
+
+      document.title = doc.title;
+      // main.js measures layout to size the scroll spacers, so CSS must be applied first.
+      const cssLoaded = [];
+      doc.head.querySelectorAll("link:not([rel=preload])").forEach((el) => {
+        const link = document.importNode(el, true);
+        if (link.rel === "stylesheet" && link.media !== "print") {
+          cssLoaded.push(new Promise((resolve) => {
+            link.onload = link.onerror = resolve;
+          }));
+        }
+        document.head.appendChild(link);
+      });
+      Array.from(doc.body.children).forEach((el) => {
+        if (el.tagName !== "SCRIPT") document.body.appendChild(document.importNode(el, true));
+      });
+      await Promise.all(cssLoaded);
+
+      // async=false downloads in parallel but still executes in order.
+      for (const src of ["clients/pacer.js", "js/main.js"]) {
+        const s = document.createElement("script");
+        s.src = src;
+        s.async = false;
+        document.body.appendChild(s);
+      }
+    })();
+  </script>
+</body>
+</html>
